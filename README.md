@@ -37,6 +37,6 @@ From the repository root, run with Python 3.12 or later:
 python src/audit.py
 ```
 
-The command downloads four [SHA-256-pinned ENTSO-E archives](data/README.md) on first use (about 140 MiB). It needs no API key or Python packages. It rebuilds the TCN median from three seeds, checks the UTC grids and compares **48 hourly profiles, 384 per-year metric values and 96 four-year means** against the versioned results. The repository contains the frozen forecasts and scoring code. The audit verifies scoring from saved forecasts. Model refitting requires the forecasting environment and input datasets.
+The command downloads four [SHA-256-pinned ENTSO-E archives](data/README.md) on first use (about 140 MiB). It needs no API key or Python packages. It rebuilds the TCN median from three seeds, checks the UTC grids and compares **48 hourly profiles, 384 per-year metric values and 96 four-year means** against the versioned results. For input preparation, fitting and regeneration of all 12 forecasts, follow the [reproduction guide](docs/reproduction.md).
 
 See [model settings](configs/model-settings.json), the [forecast protocol](configs/protocol.json) and [forecast provenance](results/provenance.json).

@@ -48,7 +48,7 @@ def source_file(entry, cache):
     cache.mkdir(parents=True, exist_ok=True)
     if not path.is_file():
         partial = path.with_suffix(".partial")
-        print(f"Downloading {entry['file']} from ENTSO-E", flush=True)
+        print(f"Downloading {entry['file']} from its pinned source", flush=True)
         try:
             with urllib.request.urlopen(entry["download_url"], timeout=90) as response:
                 with partial.open("wb") as stream:

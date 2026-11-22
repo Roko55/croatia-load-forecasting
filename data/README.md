@@ -15,3 +15,22 @@ The two external checkpoint references are [Chronos-2](https://huggingface.co/am
 ## Frozen forecasts
 
 The four compressed tables in [results/profiles](../results/profiles) contain UTC timestamps and model-generated MW forecasts, exported at round-trip floating-point precision. They include the three constituent TCN forecast vectors. The audit combines these hourly. The observed series is read from the ENTSO-E files at run time.
+
+## Development inputs
+
+`src/training_inputs.py` reads the ENTSO-E legacy workbook for 2006–2015,
+the bridge workbook for the remaining early observations through 2018, and
+the annual CSVs from 2019. Links and checksums are in
+[training-sources.json](training-sources.json) and
+[entsoe-sources.json](entsoe-sources.json). The command fills historical
+gaps using up to two preceding hours of carry-forward. The scoring inputs
+use source observations directly.
+
+The compact ERA5 Parquet extract contains only UTC timestamps and the four
+cities' 2-metre temperatures for 2006–2022. It is a subset of the study
+weather inputs, with the original numeric values preserved. Contains
+modified Copernicus Climate Change Service information (2006–2022), via
+the [Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api).
+The upstream ERA5 product is available from the
+[Copernicus Climate Data Store](https://doi.org/10.24381/cds.adbb2d47).
+The weather extract is provided under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

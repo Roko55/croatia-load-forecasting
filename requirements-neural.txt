@@ -1,0 +1,14 @@
+-r requirements-training.txt
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.9.1+cpu
+transformers==4.57.6
+chronos-forecasting==2.3.2
+neuralforecast==3.1.2
+pytorch-lightning==2.5.6
+torchmetrics==1.8.2
+utilsforecast==0.2.15
+timesfm==3.0.2
+safetensors==0.8.0
+coreforecast==0.0.16
+lightning-utilities==0.15.3
+ray[tune]==2.50.1
