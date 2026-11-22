@@ -25,7 +25,9 @@ python src/train.py --year 2019 2020 2021 2022 --verify
 Add `--model` followed by one or more model IDs from
 [the protocol](../configs/protocol.json) to select workflows. For the six
 classical workflows, `requirements-training.txt` is sufficient.
-The runner executes models sequentially with two CPU threads.
+The runner executes models sequentially with at most two CPU threads.
+TimesFM-3 selects the PyTorch math attention backend explicitly for stable
+CPU inference across runs.
 
 Chronos-2 and TimesFM-3 download their pinned checkpoints on first run
 (about 1.7 GiB combined) and generate forecasts with frozen weights. They

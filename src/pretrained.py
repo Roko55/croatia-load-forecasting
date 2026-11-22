@@ -95,6 +95,7 @@ def timesfm_context(torch, train, future, folder):
     from safetensors.torch import load_file
     from timesfm3.torch.model import TimesFM3Torch
     from timesfm3.torch.transformer import RotaryPositionalEmbedding
+    from torch.nn.attention import SDPBackend, sdpa_kernel
 
     receipt = checkpoint_spec()["timesfm3"]
     path = folder / "model.safetensors"
@@ -114,7 +115,8 @@ def timesfm_context(torch, train, future, folder):
                                                          module.max_timescale).timescale
     assert all(not tensor.is_meta for tensor in model.buffers())
     model.eval()
-    with torch.inference_mode(), bounded_attention(torch) as proof:
+    # Fix the kernel across runs while retaining the same attention mask and weights.
+    with torch.inference_mode(), sdpa_kernel(SDPBackend.MATH), bounded_attention(torch) as proof:
         pred = model.decode(target, horizon=len(future), past_future_covariates=covs)
     assert proof.get("same_attention_axis")
     assert pred.shape == (1, 1 + len(features), len(future), len(cfg["quantiles"]))
