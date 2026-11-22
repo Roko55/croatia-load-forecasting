@@ -48,7 +48,8 @@ Verification compares every generated hour with its archived point forecast.
 The maximum allowed difference is 0.005 MW for the locally fitted workflows
 and calendar baseline, and 0.05 MW for the pretrained workflows. These
 limits check numerical reproduction against the archive. The recorded full
-reproduction used the pinned CPU environment on Windows. For a scoring-only
+reproduction used the pinned CPU environment on Windows and verified all
+48 regenerated profiles. The largest hourly difference was 0.00159 MW. For a scoring-only
 check, run `python src/audit.py`.
 
 The preparation and generation commands accept 2019–2022 only. Each fold

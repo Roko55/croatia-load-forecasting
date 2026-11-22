@@ -24,7 +24,10 @@ the bridge workbook from 31 December 2015 at 23:00 UTC through 2018, and
 the annual CSVs from 2019. The legacy workbook's coverage ends at Zagreb's
 local New Year, so the bridge supplies the last UTC hour of 2015. The
 [ENTSO-E Power Statistics source](https://www.entsoe.eu/data/power-stats/)
-changes to Transparency Platform aggregates from 2019. Links and checksums are in
+changes to Transparency Platform aggregates from 2019. On the 7,295
+overlapping Croatian hours from January through October 2019, the annual
+CSV averages 33.01 MW below the bridge workbook and the mean absolute
+difference is 34.35 MW. The benchmark uses the annual CSV from 2019 onward. Links and checksums are in
 [training-sources.json](training-sources.json) and
 [entsoe-sources.json](entsoe-sources.json). The command fills historical
 gaps using up to two preceding hours of carry-forward. The scoring inputs
