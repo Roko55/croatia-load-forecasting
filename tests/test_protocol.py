@@ -3,6 +3,7 @@ import unittest
 import pandas as pd
 
 from audit import ROOT, read_json, score
+from models._neuralforecast import block_starts
 from training_inputs import (
     COVARIATES, START, WEATHER, boundary, source_covariates, time_grid, validate,
     workbook_history,
@@ -66,6 +67,19 @@ class ForecastInputTest(unittest.TestCase):
         christmas = frame.loc[local.dt.strftime("%Y-%m-%d").eq("2020-12-25"), "is_holiday"]
         self.assertEqual(len(christmas), 24)
         self.assertTrue(christmas.eq(1).all())
+
+
+class ForecastWindowTest(unittest.TestCase):
+    def test_empty_or_short_horizon_is_rejected(self):
+        for count, window in ((0, 168), (167, 168), (335, 336)):
+            with self.subTest(count=count, window=window):
+                with self.assertRaisesRegex(ValueError, "one complete .*hour window"):
+                    block_starts(count, window)
+
+    def test_window_schedule_covers_the_final_hours(self):
+        self.assertEqual(block_starts(336, 336), [0])
+        self.assertEqual(block_starts(672, 336), [0, 336])
+        self.assertEqual(block_starts(700, 336), [0, 336, 364])
 
 
 class ScoringTest(unittest.TestCase):

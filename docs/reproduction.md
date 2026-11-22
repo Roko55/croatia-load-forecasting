@@ -50,7 +50,9 @@ For a scoring-only check, run `python src/audit.py`.
 
 The preparation and generation commands accept 2019–2022 only. Each fold
 uses measured demand up to the preceding December 31 and supplies the target
-year's calendar and ERA5 temperatures to the forecaster.
+year's calendar and ERA5 temperatures to the forecaster. N-HiTS and TFT
+require at least one complete forecast window (168 and 336 hours,
+respectively). The benchmark always supplies a full year.
 
 ## Automated checks
 

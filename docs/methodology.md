@@ -37,7 +37,7 @@ RMSE, MAPE and signed annual energy bias use the raw forecasts. Peak magnitude e
 
 The reported TCN profile is the hourly median of seeds 42–44. Other stochastic local workflows use the selected recipe's seed 42. See the [seed sensitivity table](../results/seed-sensitivity.csv). The four development years were used for model selection. Differences among the top models are descriptive.
 
-The benchmark covers 2019–2022. The held-out year 2026 uses a 2006–2025 history window and will be evaluated when full-year weather and demand are available.
+The 12-workflow benchmark covers the 2019–2022 development years used for model selection. Earlier retrospective evaluations for 2023–2025 used a different model roster. The held-out year 2026 uses a 2006–2025 history window and will be evaluated when full-year weather and demand are available.
 
 To regenerate the figures, install the optional plotting dependency
 with `python -m pip install -r requirements-figures.txt` and run

@@ -17,6 +17,8 @@ def inputs(data):
 
 
 def block_starts(count, horizon):
+    if horizon < 1 or count < horizon:
+        raise ValueError(f"Forecast requires at least one complete {horizon}-hour window (got {count} hours).")
     starts = list(range(0, count - horizon + 1, horizon))
     if starts[-1] + horizon < count:
         starts.append(count - horizon)
@@ -24,6 +26,8 @@ def block_starts(count, horizon):
 
 
 def direct(model, cls, options, steps, horizon, train, future, seed):
+    starts = block_starts(len(future), horizon)
+
     import logging
     from neuralforecast import NeuralForecast
     from neuralforecast.losses.pytorch import MAE
@@ -52,7 +56,6 @@ def direct(model, cls, options, steps, horizon, train, future, seed):
     # Every forecast block is a separate series with covariates and a constant dummy target.
     source = pd.concat([history[known.columns].tail(horizon), known], ignore_index=True)
     contexts, blocks = [], []
-    starts = block_starts(len(known), horizon)
     for index in starts:
         tag = f"block{index:05d}"
         context = source.iloc[index:index + horizon].assign(unique_id=tag, y=np.float32(0))
