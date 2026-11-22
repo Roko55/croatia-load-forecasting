@@ -6,12 +6,12 @@ The benchmark compares 12 full-year forecasts for 2019–2022. See [how the metr
 
 | Year | Lowest raw hourly MAE | Lowest equal-energy shape MAE |
 |---|---:|---:|
-| 2019 | Random Forest · 84.62 MW | LightGBM · 72.749 MW |
+| 2019 | Random Forest · 84.62 MW | LightGBM and Random Forest · 72.75 MW |
 | 2020 | LightGBM · 82.01 MW | LightGBM · 76.20 MW |
 | 2021 | MLP · 83.58 MW | LightGBM · 67.07 MW |
 | 2022 | TimesFM-3 · 88.95 MW | MLP · 75.11 MW |
 
-In 2019, LightGBM and Random Forest were 0.0039 MW apart on shape MAE. The years were used for model selection. The four-year raw MAE gap between MLP and LightGBM was 1.83 MW, and the mean MLP MAE across individual seeds ranged from 86.09 to 90.52 MW. The differences among these leading models are descriptive. [Seed sensitivity](../results/seed-sensitivity.csv)
+Values are rounded to two decimals. These years were used for model selection. MLP led LightGBM by 1.83 MW on four-year raw MAE, while MLP's mean MAE across individual seeds ranged from 86.09 to 90.52 MW. Treat the ranking as descriptive. [Seed sensitivity](../results/seed-sensitivity.csv)
 
 ## What the scores tell us
 
@@ -23,7 +23,7 @@ In 2019, LightGBM and Random Forest were 0.0039 MW apart on shape MAE. The years
 | Closest average hour-to-hour changes at equal annual energy | Calendar baseline | 21.95 MW ramp MAE |
 | Best identification of the highest-load hours | TimesFM-3 | 67.63% top-5% overlap |
 
-MLP reduced raw MAE by 24.4% compared with the calendar baseline (115.25 MW). The baseline still had the lowest mean ramp error. Ramp MAE is an average over all hourly changes, so a lower score alone gives no conclusion about the largest ramps. Peak magnitude and peak timing also answer different questions. The annual maxima may occur at different hours. Top-5% overlap tests the agreement in which hours carry high demand.
+MLP reduced raw MAE by 24.4% compared with the calendar baseline (115.25 MW). Ramp MAE averages errors across all hourly changes. Annual peak error measures magnitude, and top-5% overlap measures agreement on which hours had high demand.
 
 ## Hourly example
 

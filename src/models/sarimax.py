@@ -22,7 +22,7 @@ def forecast(train, future):
 
 
 def conditional_sarimax(train, future, weather=WEATHER, features_class=Features):
-    """Estimate the original SARIMAX order with conditional AR innovations."""
+    """Fit the daily seasonal SARIMAX using conditional AR innovations."""
     from scipy.linalg import qr
     from scipy.optimize import minimize
 

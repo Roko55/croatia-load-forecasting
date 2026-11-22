@@ -25,8 +25,7 @@ Click a model name to open its Python implementation. Each file is in [src/model
 
 **Raw hourly MAE** scores the forecast as generated. **Shape MAE** scores the same hourly profile after scaling its annual energy to the observed total. This scaling is applied only during evaluation. Both report mean absolute hourly error in MW, with equal weight per year.
 
-- **MLP** had the lowest raw hourly MAE (87.11 MW). **LightGBM** had the lowest equal-energy shape MAE (72.87 MW).
-- The raw MAE leader changed in every development year. **TimesFM-3** had the highest average overlap with the observed top 5% of load hours (67.63%).
+The raw MAE leader changed every year. TimesFM-3 identified the highest-load hours best, matching 67.63% of the observed top 5% of hours on average.
 
 [Year-by-year leaders and peak/ramp results](docs/results.md) · [Full metric tables](results/summary.csv) · [Seed sensitivity](results/seed-sensitivity.csv)
 
