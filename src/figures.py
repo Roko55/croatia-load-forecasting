@@ -1,4 +1,4 @@
-"""Render the four paper figures from the same frozen inputs used for scoring."""
+"""Render weekly profiles and the hourly example from the frozen scoring inputs."""
 import argparse
 from datetime import datetime, timedelta
 from math import ceil, floor, fsum
@@ -62,6 +62,48 @@ def plot(year, actual, curves, models):
     plt.close(figure)
 
 
+def plot_peak_week(year, actual, curves):
+    peak = max(range(len(actual)), key=actual.__getitem__)
+    start = max(0, min(peak - WEEK // 2, len(actual) - WEEK))
+    end = start + WEEK
+    origin = datetime(year, 1, 1)
+    dates = [origin + timedelta(hours=hour) for hour in range(start, end)]
+    peak_time = origin + timedelta(hours=peak)
+    selection = (
+        ("ffn", "MLP", "#087a8a", "-"),
+        ("lightgbm_thermal", "LightGBM", "#b65324", "--"),
+    )
+
+    fig, axes = plt.subplots(2, 1, figsize=(11, 6.2), sharex=True, sharey=True)
+    fig.subplots_adjust(left=.095, right=.97, bottom=.115, top=.78, hspace=.42)
+    fig.text(.095, .955, f"Croatian electricity demand around the {year} peak",
+             fontsize=17, fontweight="semibold", color=OBSERVED)
+    fig.text(.095, .91, f"Hourly load over seven days around the observed peak on {peak_time:%d %b, %H:%M} UTC",
+             fontsize=10, color="#475569")
+
+    for ax, scaled in zip(axes, (False, True), strict=True):
+        ax.set_title("Equal annual energy" if scaled else "Raw forecasts",
+                     loc="left", fontsize=11, fontweight="semibold", color=OBSERVED)
+        ax.axvline(peak_time, color="#7b8894", linestyle=":", linewidth=1)
+        ax.plot(dates, actual[start:end], color=OBSERVED, linewidth=1.6, label="Observed ENTSO-E")
+        for key, label, color, style in selection:
+            forecast = curves[key]
+            factor = fsum(actual) / fsum(forecast) if scaled else 1
+            ax.plot(dates, [load * factor for load in forecast[start:end]],
+                    label=label, color=color, linestyle=style, linewidth=1.3)
+        ax.set_ylabel("Load (MW)")
+        ax.grid(axis="y", linewidth=.55, color="#d8e1e6")
+        ax.set_axisbelow(True)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.xaxis.set_major_locator(mdates.DayLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d %b"))
+    axes[-1].set_xlabel("Date (UTC)")
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper left", bbox_to_anchor=(.089, .885), ncol=3, frameon=False)
+    fig.savefig(ROOT / "results" / "figures" / f"peak-week-{year}.png", dpi=150, facecolor="white")
+    plt.close(fig)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cache", type=Path, default=ROOT / "data" / "cache")
@@ -70,8 +112,11 @@ def main():
     sources = read_json(ROOT / "data" / "entsoe-sources.json")
     for key, fold in lock["development"].items():
         year = int(key)
-        plot(year, observed(year, sources[key], args.cache),
-             predictions(year, fold, lock["models"]), lock["models"])
+        actual = observed(year, sources[key], args.cache)
+        curves = predictions(year, fold, lock["models"])
+        plot(year, actual, curves, lock["models"])
+        if year == 2022:
+            plot_peak_week(year, actual, curves)
 
 
 if __name__ == "__main__":

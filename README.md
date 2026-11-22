@@ -2,13 +2,13 @@
 
 A comparison of **12 workflows** that generate full-year hourly Croatian electricity demand profiles. The development benchmark covers **2019–2022** and uses observed ERA5 weather. Actual load from each target year is used for scoring. The held-out year 2026 is reserved for final evaluation.
 
-[Run the benchmark](docs/reproduction.md) · [Read the methodology](docs/methodology.md) · [View results by year](results/by-year.csv) · [Download hourly profiles](results/profiles/)
+[Run the benchmark](docs/reproduction.md) · [Read the methodology](docs/methodology.md) · [Read the results](docs/results.md) · [Download hourly profiles](results/profiles/)
 
 ## Models and results
 
 Click a model name to open its Python implementation. Each file is in [src/models](src/models/) and exposes a `forecast` function. Use the ID in the second column with `src/train.py --model`.
 
-| Model code | `--model` ID | Hourly MAE (MW) | Shape MAE (MW) |
+| Model code | `--model` ID | Raw hourly MAE (MW) | Equal-energy shape MAE (MW) |
 |---|---|---:|---:|
 | [MLP](src/models/mlp.py) | `ffn` | **87.11** | 74.33 |
 | [LightGBM](src/models/lightgbm.py) | `lightgbm_thermal` | 88.94 | **72.87** |
@@ -23,7 +23,12 @@ Click a model name to open its Python implementation. Each file is in [src/model
 | [SARIMAX](src/models/sarimax.py) | `sarimax` | 132.12 | 120.69 |
 | [Chronos-2](src/models/chronos2.py) | `chronos2` | 246.24 | 205.13 |
 
-Scores are averaged with equal weight per year. Shape MAE compares profiles after matching annual energy at scoring time. Chronos-2 and TimesFM-3 use frozen pretrained weights. [Full metric tables](results/summary.csv) · [Seed sensitivity](results/seed-sensitivity.csv)
+**Raw hourly MAE** scores the forecast as generated. **Shape MAE** scores the same hourly profile after scaling its annual energy to the observed total. This scaling is applied only during evaluation. Both report mean absolute hourly error in MW, with equal weight per year.
+
+- **MLP** had the lowest raw hourly MAE (87.11 MW). **LightGBM** had the lowest equal-energy shape MAE (72.87 MW).
+- The raw MAE leader changed in every development year. **TimesFM-3** had the highest average overlap with the observed top 5% of load hours (67.63%).
+
+[Year-by-year leaders and peak/ramp results](docs/results.md) · [Full metric tables](results/summary.csv) · [Seed sensitivity](results/seed-sensitivity.csv)
 
 ## Repository map
 
@@ -36,7 +41,7 @@ Scores are averaged with equal weight per year. Shape MAE compares profiles afte
 
 ## Compare the profiles
 
-Weekly means by model for [2019](results/figures/profiles-2019.png), [2020](results/figures/profiles-2020.png), [2021](results/figures/profiles-2021.png) and [2022](results/figures/profiles-2022.png). Metrics use the original hourly values.
+Weekly means by model for [2019](results/figures/profiles-2019.png), [2020](results/figures/profiles-2020.png), [2021](results/figures/profiles-2021.png) and [2022](results/figures/profiles-2022.png). Metrics use the original hourly values. See an [hourly peak-week example](docs/results.md#hourly-example).
 
 ![Weekly mean observed and predicted load in 2022 for all 12 models](results/figures/profiles-2022.png)
 
