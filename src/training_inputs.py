@@ -39,6 +39,15 @@ def validate(train, future, year):
             "Historical demand must be finite and positive.")
 
 
+def workbook_history(legacy, bridge):
+    """The legacy workbook ends at midnight in Zagreb, one hour before UTC New Year."""
+    cutover = pd.Timestamp("2016-01-01", tz=ZAGREB).tz_convert("UTC")
+    original = legacy[(legacy.index >= START) & (legacy.index < cutover)]
+    remaining = bridge[(bridge.index >= cutover) & (bridge.index < boundary(min(YEARS)))]
+    require(cutover in remaining.index, "Bridge workbook is missing the first hour after the legacy period.")
+    return pd.concat([original, remaining], verify_integrity=True)
+
+
 def source_history(cache, years, manifest):
     """Read historical target observations through the year before the latest requested origin."""
     files = manifest["entsoe_workbooks"]
@@ -49,7 +58,7 @@ def source_history(cache, years, manifest):
     annual = read_json(ROOT / "data" / "entsoe-sources.json")
     first_modern = min(YEARS)
     stop = max(years)
-    parts = [legacy[legacy.index.year <= 2015], bridge[bridge.index.year < first_modern]]
+    parts = [workbook_history(legacy, bridge)]
     for year in range(first_modern, stop):
         values = observed(year, annual[str(year)], cache)
         parts.append(pd.Series(values, index=time_grid(boundary(year), boundary(year+1)), name="demand_mw"))

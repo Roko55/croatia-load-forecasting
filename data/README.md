@@ -10,7 +10,8 @@ The archive download cache is ignored by Git. To use already downloaded copies o
 
 The research forecasts used [Copernicus ERA5 hourly single-level data](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels) and Croatian holiday and local-time features. The frozen development input hashes appear in [the protocol](../configs/protocol.json). The metric audit only requires observed load and archived forecasts.
 
-The two external checkpoint references are [Chronos-2](https://huggingface.co/amazon/chronos-2) and [TimesFM-3](https://huggingface.co/google/timesfm-3.0-pytorch). Revisions and weight checksums are recorded in [the model settings](../configs/model-settings.json).
+The two external checkpoint references are [Chronos-2 (Apache 2.0)](https://huggingface.co/amazon/chronos-2) and
+[TimesFM-3 (TimesFM Non-Commercial License v1.0)](https://huggingface.co/google/timesfm-3.0-pytorch#license). Revisions and weight checksums are recorded in [the model settings](../configs/model-settings.json).
 
 ## Frozen forecasts
 
@@ -19,8 +20,11 @@ The four compressed tables in [results/profiles](../results/profiles) contain UT
 ## Development inputs
 
 `src/training_inputs.py` reads the ENTSO-E legacy workbook for 2006–2015,
-the bridge workbook for the remaining early observations through 2018, and
-the annual CSVs from 2019. Links and checksums are in
+the bridge workbook from 31 December 2015 at 23:00 UTC through 2018, and
+the annual CSVs from 2019. The legacy workbook's coverage ends at Zagreb's
+local New Year, so the bridge supplies the last UTC hour of 2015. The
+[ENTSO-E Power Statistics source](https://www.entsoe.eu/data/power-stats/)
+changes to Transparency Platform aggregates from 2019. Links and checksums are in
 [training-sources.json](training-sources.json) and
 [entsoe-sources.json](entsoe-sources.json). The command fills historical
 gaps using up to two preceding hours of carry-forward. The scoring inputs

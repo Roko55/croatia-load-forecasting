@@ -13,7 +13,13 @@ At each January 1 UTC origin, each workflow generates a full year of hourly Croa
 
 The common forecast-year input is the calendar and observed ERA5 temperatures for Zagreb, Split, Rijeka and Osijek. There is no refresh with measured demand during the forecast year. Historical gaps use past-only forward filling for at most two consecutive hours. Every development target hour is source-valid.
 
-The calendar baseline uses local hour, day type and month with recent observations weighted more heavily. Locally fitted models share the history split, with model-specific features, objectives and training budgets. Chronos-2 and TimesFM-3 use frozen pretrained checkpoints and the last 8,192 and 16,384 historical hours, respectively. Their external pretraining overlap with Croatian load is unknown. The experiment compares complete forecasting workflows. It cannot isolate the effect of model architecture alone.
+The calendar baseline uses local hour, day type and month with recent observations weighted more heavily. Locally fitted models share the history split, with model-specific features, objectives and training budgets. Chronos-2 and TimesFM-3 use frozen pretrained checkpoints and the last 8,192 and 16,384 historical hours, respectively. Their external pretraining overlap with Croatian load is unknown. Chronos-2 generates the full 8,760 or 8,784 hours through the library's
+long-horizon continuation, using its predicted median as feedback. This
+extends beyond the checkpoint's recommended 1,024 steps. Its score applies
+to this annual configuration. See the
+[Chronos-2 pipeline](https://github.com/amazon-science/chronos-forecasting/blob/v2.3.2/src/chronos/chronos2/pipeline.py)
+for the continuation rule. The experiment compares complete forecasting
+workflows. It cannot isolate the effect of model architecture alone.
 
 ## Scoring
 

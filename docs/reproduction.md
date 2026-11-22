@@ -46,9 +46,19 @@ with `config.json` and `model.safetensors` inside each.
 
 Verification compares every generated hour with its archived point forecast.
 The maximum allowed difference is 0.005 MW for the locally fitted workflows
-and calendar baseline, and 0.05 MW for the pretrained workflows. For a
-scoring-only check, run `python src/audit.py`.
+and calendar baseline, and 0.05 MW for the pretrained workflows. These
+limits check numerical reproduction against the archive. The recorded full
+reproduction used the pinned CPU environment on Windows. For a scoring-only
+check, run `python src/audit.py`.
 
 The preparation and generation commands accept 2019–2022 only. Each fold
 uses measured demand up to the preceding December 31 and supplies the target
 year's calendar and ERA5 temperatures to the forecaster.
+
+## Automated checks
+
+[GitHub Actions](https://github.com/Roko55/croatia-load-forecasting/actions)
+runs the workbook boundary, input schema, DST, scoring and TimesFM-3
+attention tests. The tests use fixtures and the packaged weather extract.
+They require neither ENTSO-E archives nor pretrained weights. For the
+full experiment, use the reproduction commands above.
