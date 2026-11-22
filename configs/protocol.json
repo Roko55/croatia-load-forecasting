@@ -1,0 +1,149 @@
+{
+  "scope": "Weather-conditioned annual Croatian load benchmark",
+  "models": {
+    "calendar_recent": {
+      "label": "Calendar baseline",
+      "recipe": "recent",
+      "type": "calendar baseline"
+    },
+    "sarimax": {
+      "label": "SARIMAX",
+      "recipe": "weekend_hour",
+      "type": "locally fitted"
+    },
+    "gam_thermal": {
+      "label": "GAM",
+      "recipe": "weekday_weekend_hour",
+      "type": "locally fitted"
+    },
+    "lightgbm_thermal": {
+      "label": "LightGBM",
+      "recipe": "trees320",
+      "type": "locally fitted"
+    },
+    "random_forest": {
+      "label": "Random Forest",
+      "recipe": "trees_200",
+      "type": "locally fitted"
+    },
+    "ffn": {
+      "label": "MLP",
+      "recipe": "epochs20",
+      "type": "locally fitted"
+    },
+    "tcn_median": {
+      "label": "TCN",
+      "recipe": "context25",
+      "type": "locally fitted"
+    },
+    "lstm": {
+      "label": "LSTM",
+      "recipe": "existing",
+      "type": "locally fitted"
+    },
+    "nhits": {
+      "label": "N-HiTS",
+      "recipe": "168_center_day",
+      "type": "locally fitted"
+    },
+    "tft": {
+      "label": "TFT",
+      "recipe": "336_nonoverlap",
+      "type": "locally fitted"
+    },
+    "chronos2": {
+      "label": "Chronos-2",
+      "recipe": "native_median",
+      "type": "external pretrained"
+    },
+    "timesfm3": {
+      "label": "TimesFM-3",
+      "recipe": "context16384",
+      "type": "external pretrained"
+    }
+  },
+  "development": {
+    "2019": {
+      "training_sha256": "37b97c041d65caf1d0546a586d2a958920d449708bbd0e15a3556362d5828050",
+      "covariate_sha256": "2b440c27714a56138c9161f0084785b65ec74060b499666f76cdcb9099f4434f",
+      "train_hours": 113952,
+      "forecast_hours": 8760,
+      "train_start_utc": "2006-01-01 00:00:00+00:00",
+      "train_last_utc": "2018-12-31 23:00:00+00:00",
+      "forecast_start_utc": "2019-01-01 00:00:00+00:00",
+      "forecast_end_exclusive_utc": "2020-01-01 00:00:00+00:00",
+      "forecast_columns": [
+        "timestamp_utc",
+        "is_holiday",
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c"
+      ],
+      "forecast_export_sha256": "acde526d61b8692a2819c9cf067770ff9ac2640dc19f93cd421f3838307d2f26"
+    },
+    "2020": {
+      "training_sha256": "b9646abfa9838b7839ba6c399c47b189f91b75c5fc0f6ecf849d73bc26885d7c",
+      "covariate_sha256": "e72e256d31eae8afce94003ff2b52333d1c9b43691ed8775efd618d4976bb682",
+      "train_hours": 122712,
+      "forecast_hours": 8784,
+      "train_start_utc": "2006-01-01 00:00:00+00:00",
+      "train_last_utc": "2019-12-31 23:00:00+00:00",
+      "forecast_start_utc": "2020-01-01 00:00:00+00:00",
+      "forecast_end_exclusive_utc": "2021-01-01 00:00:00+00:00",
+      "forecast_columns": [
+        "timestamp_utc",
+        "is_holiday",
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c"
+      ],
+      "forecast_export_sha256": "61ef7cd5401dfa3a322523af617c36a79f4251805c4cd81bce7d27f915a17631"
+    },
+    "2021": {
+      "training_sha256": "46122ead25e2372e37904388a423e2e74cffc4c7ee98057f08dc33be00cc7e9c",
+      "covariate_sha256": "1aa561832b188bdecca6e077af122acf8caf345de2fcc7b3d5d64db193bd3cb6",
+      "train_hours": 131496,
+      "forecast_hours": 8760,
+      "train_start_utc": "2006-01-01 00:00:00+00:00",
+      "train_last_utc": "2020-12-31 23:00:00+00:00",
+      "forecast_start_utc": "2021-01-01 00:00:00+00:00",
+      "forecast_end_exclusive_utc": "2022-01-01 00:00:00+00:00",
+      "forecast_columns": [
+        "timestamp_utc",
+        "is_holiday",
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c"
+      ],
+      "forecast_export_sha256": "031249b7ea9e855cdfbcde758c16acf84a4d834c74cf2c2f711d6bde6286ae70"
+    },
+    "2022": {
+      "training_sha256": "eda3f1a4578eed294952962a21940220c9062e2ffd8ec74228d4313e743a07a0",
+      "covariate_sha256": "f542acfbdf9e83a20a98275fdde380f69aa47eba662bac1a7ae68dfc301af9f7",
+      "train_hours": 140256,
+      "forecast_hours": 8760,
+      "train_start_utc": "2006-01-01 00:00:00+00:00",
+      "train_last_utc": "2021-12-31 23:00:00+00:00",
+      "forecast_start_utc": "2022-01-01 00:00:00+00:00",
+      "forecast_end_exclusive_utc": "2023-01-01 00:00:00+00:00",
+      "forecast_columns": [
+        "timestamp_utc",
+        "is_holiday",
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c"
+      ],
+      "forecast_export_sha256": "b801e1abc3a2e5d6f0177a8a2de50dd61d330499c28f5ad7414a0e7b71622322"
+    }
+  },
+  "reserved_test": {
+    "year": 2026,
+    "history_start_utc": "2006-01-01T00:00:00+00:00",
+    "history_end_exclusive_utc": "2026-01-01T00:00:00+00:00",
+    "status": "results pending"
+  }
+}

@@ -1,0 +1,368 @@
+{
+  "calendar_recent": {
+    "recipe": "recent",
+    "settings": {
+      "half_life_years": 4
+    }
+  },
+  "sarimax": {
+    "recipe": "weekend_hour",
+    "settings": {
+      "configuration": {
+        "weather_columns": [
+          "temperature_zagreb_c",
+          "temperature_split_c",
+          "temperature_rijeka_c",
+          "temperature_osijek_c"
+        ],
+        "order": [
+          1,
+          0,
+          0
+        ],
+        "seasonal_order": [
+          1,
+          0,
+          0,
+          24
+        ],
+        "maxiter": 100,
+        "spline_intervals": 8,
+        "smoothing": 10.0,
+        "ridge": 1e-06,
+        "annual_harmonics": 3,
+        "use_exog": true,
+        "trend": "n",
+        "enforce_stationarity": true,
+        "enforce_invertibility": true
+      },
+      "estimator": "conditional Gaussian innovations",
+      "weekend_by_hour_harmonics": 1
+    }
+  },
+  "gam_thermal": {
+    "recipe": "weekday_weekend_hour",
+    "settings": {
+      "weather_columns": [
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c",
+        "temperature_zagreb_c_avg24",
+        "temperature_split_c_avg24",
+        "temperature_rijeka_c_avg24",
+        "temperature_osijek_c_avg24"
+      ],
+      "order": [
+        1,
+        0,
+        0
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        0,
+        24
+      ],
+      "maxiter": 100,
+      "spline_intervals": 8,
+      "smoothing": 10.0,
+      "ridge": 1e-06,
+      "annual_harmonics": 3,
+      "use_exog": true,
+      "trend": "n",
+      "enforce_stationarity": true,
+      "enforce_invertibility": true,
+      "hour_by_weekend": true
+    }
+  },
+  "lightgbm_thermal": {
+    "recipe": "trees320",
+    "settings": {
+      "boosting_type": "gbdt",
+      "class_weight": null,
+      "colsample_bytree": 1.0,
+      "importance_type": "split",
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 20,
+      "min_child_weight": 0.001,
+      "min_split_gain": 0.0,
+      "n_estimators": 320,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 0.0,
+      "subsample": 1.0,
+      "subsample_for_bin": 200000,
+      "subsample_freq": 0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "verbosity": -1
+    }
+  },
+  "random_forest": {
+    "recipe": "trees_200",
+    "settings": {
+      "bootstrap": true,
+      "ccp_alpha": 0.0,
+      "criterion": "squared_error",
+      "max_depth": 14,
+      "max_features": 0.8,
+      "max_leaf_nodes": null,
+      "max_samples": 0.65,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 24,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "monotonic_cst": null,
+      "n_estimators": 200,
+      "n_jobs": 2,
+      "oob_score": false,
+      "random_state": 42,
+      "verbose": 0,
+      "warm_start": false
+    }
+  },
+  "ffn": {
+    "recipe": "epochs20",
+    "settings": {
+      "activation": "relu",
+      "alpha": 0.0001,
+      "batch_size": 512,
+      "beta_1": 0.9,
+      "beta_2": 0.999,
+      "early_stopping": false,
+      "epsilon": 1e-08,
+      "hidden_layer_sizes": [
+        48,
+        24
+      ],
+      "learning_rate": "constant",
+      "learning_rate_init": 0.001,
+      "loss": "squared_error",
+      "max_fun": 15000,
+      "max_iter": 1,
+      "momentum": 0.9,
+      "n_iter_no_change": 10,
+      "nesterovs_momentum": true,
+      "power_t": 0.5,
+      "random_state": 42,
+      "shuffle": true,
+      "solver": "adam",
+      "tol": 0.0001,
+      "validation_fraction": 0.1,
+      "verbose": false,
+      "warm_start": false,
+      "epochs": 20
+    }
+  },
+  "tcn_median": {
+    "recipe": "context25",
+    "settings": {
+      "aggregation": "hourwise median",
+      "fits": {
+        "42": {
+          "seed": 42,
+          "channels": 8,
+          "dilations": [
+            1,
+            3,
+            8
+          ],
+          "kernel": 3,
+          "epochs": 14,
+          "batch_chunks": 8,
+          "chunk_hours": 672,
+          "loss": "L1",
+          "learning_rate": 0.002,
+          "optimizer": "AdamW",
+          "weather_only_history_hours": 24
+        },
+        "43": {
+          "seed": 43,
+          "channels": 8,
+          "dilations": [
+            1,
+            3,
+            8
+          ],
+          "kernel": 3,
+          "epochs": 14,
+          "batch_chunks": 8,
+          "chunk_hours": 672,
+          "loss": "L1",
+          "learning_rate": 0.002,
+          "optimizer": "AdamW",
+          "weather_only_history_hours": 24
+        },
+        "44": {
+          "seed": 44,
+          "channels": 8,
+          "dilations": [
+            1,
+            3,
+            8
+          ],
+          "kernel": 3,
+          "epochs": 14,
+          "batch_chunks": 8,
+          "chunk_hours": 672,
+          "loss": "L1",
+          "learning_rate": 0.002,
+          "optimizer": "AdamW",
+          "weather_only_history_hours": 24
+        }
+      }
+    }
+  },
+  "lstm": {
+    "recipe": "existing",
+    "settings": {
+      "seed": 42,
+      "epochs": 12,
+      "hidden_units": 16,
+      "chunk_hours": 336,
+      "warmup_hours": 24,
+      "uses_future_load": false
+    }
+  },
+  "nhits": {
+    "recipe": "168_center_day",
+    "settings": {
+      "class": "NHITS",
+      "options": {
+        "n_blocks": [
+          1,
+          1,
+          1
+        ],
+        "mlp_units": [
+          [
+            64,
+            64
+          ],
+          [
+            64,
+            64
+          ],
+          [
+            64,
+            64
+          ]
+        ],
+        "n_pool_kernel_size": [
+          12,
+          6,
+          1
+        ],
+        "n_freq_downsample": [
+          24,
+          6,
+          1
+        ]
+      },
+      "horizon_hours": 168,
+      "context_hours": 168,
+      "steps": 260,
+      "features": [
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "week_sin",
+        "week_cos",
+        "annual_sin",
+        "annual_cos",
+        "weekend"
+      ],
+      "seed": 42,
+      "runtime": {
+        "neuralforecast": "3.1.2",
+        "torch": "2.9.1+cpu",
+        "numpy": "1.26.4",
+        "pandas": "2.2.3"
+      },
+      "excludes_insample_y": true,
+      "kept_center_hours": 24
+    }
+  },
+  "tft": {
+    "recipe": "336_nonoverlap",
+    "settings": {
+      "class": "TFT",
+      "options": {
+        "hidden_size": 16,
+        "n_head": 2,
+        "dropout": 0.1
+      },
+      "horizon_hours": 336,
+      "context_hours": 336,
+      "steps": 220,
+      "features": [
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "week_sin",
+        "week_cos",
+        "annual_sin",
+        "annual_cos",
+        "weekend"
+      ],
+      "seed": 42,
+      "runtime": {
+        "neuralforecast": "3.1.2",
+        "torch": "2.9.1+cpu",
+        "numpy": "1.26.4",
+        "pandas": "2.2.3"
+      },
+      "excludes_insample_y": true
+    }
+  },
+  "chronos2": {
+    "recipe": "native_median",
+    "settings": {
+      "configuration": {
+        "checkpoint": "amazon/chronos-2",
+        "revision": "29ec3766d36d6f73f0696f85560a422f50e8498c",
+        "dtype": "float32",
+        "context_hours": 8192,
+        "batch_size": 16,
+        "point": "median",
+        "unrolled_quantiles": [
+          0.5
+        ]
+      },
+      "effective_context_rows": 8192,
+      "checkpoint_sha256": "ddcda3c7508bf2528087723e98a20707cc04b7f370ae275a9fd88078ddba4f42"
+    }
+  },
+  "timesfm3": {
+    "recipe": "context16384",
+    "settings": {
+      "past_context_hours": 16384,
+      "checkpoint_sha256": "a7592b0a8432baee54483254e5647856911ce69e09d09a9bb65904b2d98f17da",
+      "revision": "43046b85ec22d584a13f8098c2ed39c889e129c2",
+      "known_future_features": [
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c",
+        "hour_sin",
+        "hour_cos",
+        "weekend",
+        "is_holiday"
+      ],
+      "point_quantile": 0.5
+    }
+  }
+}
