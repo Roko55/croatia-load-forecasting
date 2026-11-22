@@ -13,24 +13,24 @@ import pandas as pd
 from threadpoolctl import threadpool_limits
 
 from audit import ROOT, digest, predictions, read_json, require, source_file
-import classical
+from models import (
+    calendar_baseline, gam, lightgbm, lstm, mlp, nhits, random_forest, sarimax, tcn, tft,
+)
 from training_inputs import YEARS, validate, write_frame
 
 CLASSICAL = {
-    "calendar_recent": classical.calendar_baseline,
-    "sarimax": classical.sarimax_weekend,
-    "gam_thermal": classical.gam_weekend,
-    "lightgbm_thermal": classical.lightgbm,
-    "random_forest": classical.random_forest,
-    "ffn": classical.mlp,
+    "calendar_recent": calendar_baseline.forecast,
+    "sarimax": sarimax.forecast,
+    "gam_thermal": gam.forecast,
+    "lightgbm_thermal": lightgbm.forecast,
+    "random_forest": random_forest.forecast,
+    "ffn": mlp.forecast,
 }
 PRETRAINED = ("chronos2", "timesfm3")
 
 
 def checkpoint(method, cache):
-    from pretrained import checkpoint_spec
-
-    spec = checkpoint_spec()[method]
+    spec = read_json(ROOT / "configs" / "checkpoints.json")[method]
     base = f"https://huggingface.co/{spec['repository']}/resolve/{spec['revision']}"
     folder = cache / method
     for file, sha in (("config.json", spec["config_sha256"]), ("model.safetensors", spec["sha256"])):
@@ -44,31 +44,28 @@ def generate(method, train, future, checkpoints):
         return result[0] if isinstance(result, tuple) else result
 
     if method == "chronos2":
-        from pretrained import chronos
+        from models import chronos2
 
-        return chronos(train, future, checkpoint(method, checkpoints))[0]
+        return chronos2.forecast(train, future, checkpoint(method, checkpoints))[0]
 
     import torch
-    import neural
 
     torch.set_num_threads(2)
     torch.set_num_interop_threads(1)
     torch.manual_seed(42)
     torch.use_deterministic_algorithms(True)
     if method == "timesfm3":
-        from pretrained import timesfm_context
+        from models import timesfm3
 
-        return timesfm_context(torch, train, future, checkpoint(method, checkpoints))[0]
+        return timesfm3.forecast(torch, train, future, checkpoint(method, checkpoints))[0]
     if method == "tcn_median":
-        trials = [neural.tcn_control(torch, train, future, seed)[0] for seed in (42, 43, 44)]
-        return np.median(np.stack(trials), axis=0)
+        return tcn.forecast(torch, train, future)
     if method == "lstm":
-        return neural.lstm(torch, train, future, 42)[0]
+        return lstm.forecast(torch, train, future, 42)[0]
     if method == "nhits":
-        engine, _, settings = neural.direct(method, 168, train, future, 42)
-        return neural.centered_days(engine, train, future, settings)
+        return nhits.forecast(train, future)
     if method == "tft":
-        return neural.direct(method, 336, train, future, 42)[1]
+        return tft.forecast(train, future)
     raise ValueError(f"Unknown workflow: {method}")
 
 

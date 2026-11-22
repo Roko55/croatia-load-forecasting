@@ -22,9 +22,18 @@ Run the full four-year reproduction with:
 python src/train.py --year 2019 2020 2021 2022 --verify
 ```
 
-Add `--model` followed by one or more model IDs from
-[the protocol](../configs/protocol.json) to select workflows. For the six
-classical workflows, `requirements-training.txt` is sufficient.
+To run one model, take its ID from the [model table](../README.md#models-and-results).
+For example:
+
+```sh
+python src/train.py --year 2022 --model lightgbm_thermal --verify
+```
+
+The model table links directly to each implementation. `src/train.py` is the
+runner. Model files with an underscore prefix provide shared features or
+training utilities. The JSON settings document the options used by the code.
+
+For the six classical workflows, `requirements-training.txt` is sufficient.
 The runner executes models sequentially with at most two CPU threads.
 TimesFM-3 selects the PyTorch math attention backend explicitly for stable
 CPU inference across runs.
