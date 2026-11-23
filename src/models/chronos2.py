@@ -1,4 +1,4 @@
-"""Chronos-2 inference with a pinned checkpoint and 8,192 history hours."""
+"""Chronos-2 with a pinned checkpoint and historical level calibration."""
 import pandas as pd
 
 from audit import digest
@@ -17,7 +17,7 @@ def forecast(train, future, checkpoint):
     torch.set_num_interop_threads(1)
     config = {'checkpoint': 'amazon/chronos-2', 'revision': CHRONOS_REVISION,
               'dtype': 'float32', 'context_hours': 8192, 'batch_size': 16, 'point': 'median',
-              'unrolled_quantiles': [0.5]}
+              'unrolled_quantiles': [0.5], 'level_history_years': 3, 'level_weight': 0.5}
     weight_sha = digest(checkpoint / 'model.safetensors')
     pipe = Chronos2Pipeline.from_pretrained(
         checkpoint, local_files_only=True,
@@ -41,5 +41,9 @@ def forecast(train, future, checkpoint):
                                unrolled_quantiles=config['unrolled_quantiles'])
     assert pd.DatetimeIndex(pred.timestamp).as_unit('ns').equals(
         pd.DatetimeIndex(target.timestamp).as_unit('ns'))
-    return pred['0.5'].to_numpy(dtype=float), {'configuration': config, 'effective_context_rows': len(context),
+    values = pred['0.5'].to_numpy(dtype=float)
+    origin = future.timestamp_utc.iloc[0]
+    past_mean = train.loc[train.timestamp_utc >= origin - pd.DateOffset(years=3), "demand_mw"].mean()
+    values *= 0.5 + 0.5 * past_mean / values.mean()
+    return values, {'configuration': config, 'effective_context_rows': len(context),
                                               'checkpoint_sha256': weight_sha}

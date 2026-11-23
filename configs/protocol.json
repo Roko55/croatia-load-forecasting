@@ -13,17 +13,17 @@
     },
     "gam_thermal": {
       "label": "GAM",
-      "recipe": "weekday_weekend_hour",
+      "recipe": "weekday_weekend_with_linear_trend",
       "type": "locally fitted"
     },
     "lightgbm_thermal": {
       "label": "LightGBM",
-      "recipe": "trees320",
+      "recipe": "trees320_thermal24_72",
       "type": "locally fitted"
     },
     "random_forest": {
       "label": "Random Forest",
-      "recipe": "trees_200",
+      "recipe": "trees200_thermal24_72",
       "type": "locally fitted"
     },
     "ffn": {
@@ -33,32 +33,32 @@
     },
     "tcn_median": {
       "label": "TCN",
-      "recipe": "context25",
+      "recipe": "prior_year_load",
       "type": "locally fitted"
     },
     "lstm": {
       "label": "LSTM",
-      "recipe": "existing",
+      "recipe": "epochs18",
       "type": "locally fitted"
     },
     "nhits": {
       "label": "N-HiTS",
-      "recipe": "168_center_day",
+      "recipe": "weekly_centered",
       "type": "locally fitted"
     },
     "tft": {
       "label": "TFT",
-      "recipe": "336_nonoverlap",
+      "recipe": "fortnightly_blocks",
       "type": "locally fitted"
     },
     "chronos2": {
       "label": "Chronos-2",
-      "recipe": "native_median",
+      "recipe": "historical_level_calibration",
       "type": "external pretrained"
     },
     "timesfm3": {
       "label": "TimesFM-3",
-      "recipe": "context16384",
+      "recipe": "context12288",
       "type": "external pretrained"
     }
   },
@@ -80,7 +80,7 @@
         "temperature_rijeka_c",
         "temperature_osijek_c"
       ],
-      "forecast_export_sha256": "acde526d61b8692a2819c9cf067770ff9ac2640dc19f93cd421f3838307d2f26"
+      "forecast_export_sha256": "c1c9f4625571490ae0760b77a04a6311ec851ea9ac7117be379e5c61938ccfcd"
     },
     "2020": {
       "training_sha256": "b9646abfa9838b7839ba6c399c47b189f91b75c5fc0f6ecf849d73bc26885d7c",
@@ -99,7 +99,7 @@
         "temperature_rijeka_c",
         "temperature_osijek_c"
       ],
-      "forecast_export_sha256": "61ef7cd5401dfa3a322523af617c36a79f4251805c4cd81bce7d27f915a17631"
+      "forecast_export_sha256": "8bca8518a3084358b37141a796e0159d75d60e657a8396d070cc276e9c722cee"
     },
     "2021": {
       "training_sha256": "46122ead25e2372e37904388a423e2e74cffc4c7ee98057f08dc33be00cc7e9c",
@@ -118,7 +118,7 @@
         "temperature_rijeka_c",
         "temperature_osijek_c"
       ],
-      "forecast_export_sha256": "031249b7ea9e855cdfbcde758c16acf84a4d834c74cf2c2f711d6bde6286ae70"
+      "forecast_export_sha256": "fd71e35e7ee58338e55e64f330e80e9e90076c8e18b821b3adc02ff9cb74a81c"
     },
     "2022": {
       "training_sha256": "eda3f1a4578eed294952962a21940220c9062e2ffd8ec74228d4313e743a07a0",
@@ -137,7 +137,7 @@
         "temperature_rijeka_c",
         "temperature_osijek_c"
       ],
-      "forecast_export_sha256": "b801e1abc3a2e5d6f0177a8a2de50dd61d330499c28f5ad7414a0e7b71622322"
+      "forecast_export_sha256": "ebd37f41ecaadd5bdf42a8bf065817bd8c97a0d031aa390d4ae58506228f3cde"
     }
   },
   "reserved_test": {
@@ -165,7 +165,7 @@
         "temperature_osijek_c"
       ],
       "tcn_storage": "point_profile",
-      "forecast_export_sha256": "7caf7a2ab4ed60b5f742a004769f79363b035427ee478b9fd1a95bb502af93bd"
+      "forecast_export_sha256": "45ce29ee3dc28d8ebb10481eb5e196614e422f121ea6584537b8b48410124550"
     },
     "2024": {
       "training_sha256": "c056e1f713944077171c708f5ddbad0bc3dee639a7125f5d02e4043f3da3573f",
@@ -185,7 +185,7 @@
         "temperature_osijek_c"
       ],
       "tcn_storage": "point_profile",
-      "forecast_export_sha256": "7df2adedd6f54263dd8f44c72708a812c00d2ca663d57a73f9c8ebec1653169a"
+      "forecast_export_sha256": "cd610feec3e7b11a967d7851b0de15267fab58e67be1acdc216ad2d54a2849ef"
     },
     "2025": {
       "training_sha256": "a27edc13adc353f0e2207bfc5014af98497bf8121e573812216cc7cc811507c9",
@@ -205,7 +205,7 @@
         "temperature_osijek_c"
       ],
       "tcn_storage": "point_profile",
-      "forecast_export_sha256": "7c3ec48c4fcd0b78a957499e1b5e8cfd7c85d5cf229550e2105bee4922516e34"
+      "forecast_export_sha256": "a2e5e1c549c934ff5b0be14f66514d50b1c0de3ac3dbb7fe7d0a87e64981c604"
     }
   }
 }

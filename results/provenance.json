@@ -1,186 +1,40 @@
 {
-  "frozen_runner_sha256": "07e6c00ecd71a255957ca31e4d2ccacc45bd534caaa846dbcde533f8cb9a4e59",
-  "locked_roster_sha256": "df5e1d0b990a3163498ad663358d67a9bb2e6cfe7b652c5ddac642bfd5d51c9d",
-  "source_profile_parquet_sha256": {
-    "2019": {
-      "calendar_recent": [
-        "633bf55adaba4294f71e0e7d8d007630ca588af4a6c0480e42b0d546ccfe48d0"
-      ],
-      "sarimax": [
-        "c6ea7c9d3992c709515d77fbbf9a4427c17b8ebea240d7d422e5e43eb4057311"
-      ],
-      "gam_thermal": [
-        "1e6e72597d42f92067eb750b70396f1e4652b4621dbdab2a09f349d1cc537920"
-      ],
-      "lightgbm_thermal": [
-        "324d9e2a387735762b179fc45ff4762cfa540af4763dbf970942e34acb6f5f8c"
-      ],
-      "random_forest": [
-        "db9134fe649d89952b8ca8f03ffa3f2e3dee5d43af0ecda9344bdc1f53483911"
-      ],
-      "ffn": [
-        "3a8e2103749ae0bd6e494ae07fc331666cdf48712670fdfd67a6f34d30b1157f"
-      ],
-      "tcn_median": [
-        "1abf715f0d80fa11350ddda87a68e7ed9cfcdf69827c3cc2cdea9b8b739efac0",
-        "ca7886aaff9dcd5678b7edd5ceb8f5054e8c2351de4391ed9a00b181b74d7efe",
-        "ed250e2d0669d01e1094d59203591b14e11191fb4975d7fab77a275a83a5b389"
-      ],
-      "lstm": [
-        "a90a50ac582c7cf83fc88f803fa61ccb98a6e84fba68e1f68aeccb192bb819fb"
-      ],
-      "nhits": [
-        "83e6c04e6a3aadd10e4b12362dffb2e9330d605ec225a70a8e94ca2b125e27b2"
-      ],
-      "tft": [
-        "08e7f55815565ba19f5b16d950de42656b045ca175102ad65d9a12fc8fd9e20c"
-      ],
-      "chronos2": [
-        "d5c6feb3b17825898a515d11514b8c2be82ef45ef99119f4e97ef8cacedcc51c"
-      ],
-      "timesfm3": [
-        "0e96fd339e091439d2d161f01daeda3a63ec6e66d5d74a0c05c15b91db33c946"
-      ]
-    },
-    "2020": {
-      "calendar_recent": [
-        "624f58fc2b15a599ac7f73837f86adf0ea20de5e68463232892dce84511c454a"
-      ],
-      "sarimax": [
-        "b1f32af59ca52c3538e37e8efbaf2a82a6ff859ba1cb0fac61b9947833ce985c"
-      ],
-      "gam_thermal": [
-        "b448fa1a898ac61b9fa150a14c13007843c19ea4bed4f9346c91a671e6225bda"
-      ],
-      "lightgbm_thermal": [
-        "49c215e8f1a130cb1a9fb2acd0f6201d1098924e5501f48e09b839d0baf21265"
-      ],
-      "random_forest": [
-        "7a253ae5a571bca138a13ea106539da10d496c391d35a61da641db70f6cc4faf"
-      ],
-      "ffn": [
-        "c5ba2578ba047f82da4dff256d53258434c873dd1c7cf6533ed6b4b582390066"
-      ],
-      "tcn_median": [
-        "28cf4a3b994762526d6f410b13e4a3c16779d28f29d179edc552696e337ce5f7",
-        "3d341b97482e4e42ecf0763a1933a76750bed8b833f4512b4e7f9e83ac6059a7",
-        "5bd8736a01cdb272d0203a76adb66bb830313427548b3b49f529e49f54d7a43b"
-      ],
-      "lstm": [
-        "2cfe8467cf4bfd9de6040b17dad4e1eb3f74079b2c848fc8ae485823757b6d3c"
-      ],
-      "nhits": [
-        "fcbaefb116622809d5d0cc118e753d5fed26e19453f2be6ce9b30a2cafdcb670"
-      ],
-      "tft": [
-        "e2cc96d63d2a0771407569af053110b4087f1a8f2ca6b4fbeeac60951f2ac9cb"
-      ],
-      "chronos2": [
-        "d5ed1d30add91c9f62db2cf4c38196f649f9a8710e549e82e86551e155b3fe3c"
-      ],
-      "timesfm3": [
-        "2b8a65a22374150cd90e931a0835610724436e2900aa062de35e67f6d1ba4a25"
-      ]
-    },
-    "2021": {
-      "calendar_recent": [
-        "01b3e3af8485619b38786db5a63c71e4ca11e1e88a7fb5bd7037b84b6a592c0c"
-      ],
-      "sarimax": [
-        "e0a3481354220f96c9249fa933426c687f30bcf5583e6be480fe70224c09ccb0"
-      ],
-      "gam_thermal": [
-        "4e69c216994acda610b8b387b14e9946ae994362dd4348260916f98f556e7e71"
-      ],
-      "lightgbm_thermal": [
-        "4963c8d377c8c9dc4d7b79d12c356277a605602f6296d36eb749a133a050df8d"
-      ],
-      "random_forest": [
-        "2b4e5a8b80522d6ef38f847e4c646c036c3bada58f3e05b527e35d63426f2682"
-      ],
-      "ffn": [
-        "1f75f93150bdb20ab0c96d3a8ffbb1931730dc8d2676e394178d704464d95614"
-      ],
-      "tcn_median": [
-        "c01dfcc9cdd7ce10cafa90e0061389b1c3ae38942d0801d214463eb11fb6f132",
-        "613a148419575dda7b5db4be9ccbe1ed0493c78df023e86d7eefcd4115befb22",
-        "c23fcd0a2c346dafcc8b573af8f0c85c83014c563e3a0cf0b95c16cb14b8484f"
-      ],
-      "lstm": [
-        "83fa44ef60fd3f54b30dbfa87bac6f0384894bee57f87df7a5abb83e5b3701ec"
-      ],
-      "nhits": [
-        "881d0d3735633be23c595a5337bf81d4dec9708c23c817e32ea447105089dc3a"
-      ],
-      "tft": [
-        "076a48c83ee93f17ab17d5436a6f3e3f8a0827c7bf576a0134783040fec4ab37"
-      ],
-      "chronos2": [
-        "ea03995fa2874b7ea499d1cc9e60c90a4e88a3f7e88ce2e28302cf98d7d9a998"
-      ],
-      "timesfm3": [
-        "1f331ed00511140583c1bb9a81662e9d6554b9b0c47b901885aab7fe3c79d848"
-      ]
-    },
-    "2022": {
-      "calendar_recent": [
-        "79b7ed60d5694002aefbaca4d5b02af26cb6fa171f38b411d229dc145d9328d4"
-      ],
-      "sarimax": [
-        "2f2c24a2c41cf89d97251164d1d66002dd9ca56dd6a4b135fe66581af459d75a"
-      ],
-      "gam_thermal": [
-        "5f80b12f09495115d469839e945bc56bd0280641a2bc52b73c6e24b0d4f966cb"
-      ],
-      "lightgbm_thermal": [
-        "6079f2ce54e94f3131b2478eea9fcc99d8c879f7e974377c4a04451aace6055c"
-      ],
-      "random_forest": [
-        "8bb28f74c6b92efd4a913192c9aae12121ed99f7ea84cede47f6d04551758b32"
-      ],
-      "ffn": [
-        "d6a08fdb23eae043fd2490585b0598aabce7532261d19e55fc01670fb2c01e73"
-      ],
-      "tcn_median": [
-        "3075698f04830c1a87c66b202afbf916def4ddd9afd521c91633b606c929f61f",
-        "491a7b8807f388bcfab8584971f50c585f18e931b07b8de82f1b1c352a38af5e",
-        "c9e5a9c3bc868a25127fb13d51821aa01e6c0a5d6fb19224ad47c59843ae1db7"
-      ],
-      "lstm": [
-        "29e3c408f265933e81bba4b19c2076fdb62fbdd00f9cec7a57208187e087c37b"
-      ],
-      "nhits": [
-        "b9184ead22bfad1fcf2ee4db1ffdb49a35ce400054d943d834af8fefaf6f1be9"
-      ],
-      "tft": [
-        "64b0b8964b5a64307fc01e5643555f277c09dec0545b330d5d802c84b3d95801"
-      ],
-      "chronos2": [
-        "0627392fdf72968dae1b9632751b8fa3e4eb0eda8e1c3cf535025eff31545cc2"
-      ],
-      "timesfm3": [
-        "44bd17881184d345e48bc78974710eb735de7aa92ccf606f76d76a141beb3861"
-      ]
-    }
+  "scope": "Archived hourly profiles and scoring inputs",
+  "selection_years": [
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "selection_rule": {
+    "development_mean_weights": "equal weight per year",
+    "raw_mae_reduction": 0.01,
+    "shape_mae_reduction": 0.03,
+    "maximum_other_metric_increase": 0.01,
+    "minimum_years_improved": 3,
+    "stochastic_mean_raw_mae_maximum_increase": 0.01
   },
-  "runtime_record": {
-    "python": "3.12.14",
-    "numpy": "1.26.4",
-    "pandas": "2.2.3",
-    "scipy": "1.13.1",
-    "statsmodels": "0.14.4",
-    "lightgbm": "4.6.0",
-    "scikit-learn": "1.7.2",
-    "pyarrow": "21.0.0",
-    "threadpoolctl": "3.6.0",
-    "tzdata": "2026.5"
+  "retrospective_years": [
+    2023,
+    2024,
+    2025
+  ],
+  "reserved_test_year": 2026,
+  "protocol_sha256": "c5926667c22096ae7749868ed998bc3bd4995da3e9982930386bd72192d6d5a4",
+  "model_settings_sha256": "d2b0e81143e11e23dd107ab91f264f89f57db94401c01eb7633cbff4c700ad6e",
+  "checkpoint_manifest_sha256": "74d540e57363202f5ac22dceddcc831356eebb1e3a07ae0769852ec16ef6c18a",
+  "output_hours": {
+    "2019": 8760,
+    "2020": 8784,
+    "2021": 8760,
+    "2022": 8760,
+    "2023": 8760,
+    "2024": 8784,
+    "2025": 8760
   },
-  "optional_runtime_record": {
-    "torch": "2.9.1+cpu",
-    "transformers": "4.57.6",
-    "chronos-forecasting": "2.3.2",
-    "neuralforecast": "3.1.2",
-    "timesfm": "3.0.2",
-    "safetensors": "0.8.0"
+  "verified": {
+    "annual_profiles": 84,
+    "metrics_per_profile": 8,
+    "observation_source": "ENTSO-E Power Statistics"
   }
 }

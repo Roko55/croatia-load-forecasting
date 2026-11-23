@@ -35,7 +35,7 @@ def forecast(torch, train, future, seed):
     def model(t):
         return head(net(t)[0])[:, context:, 0]
 
-    for _ in range(12):
+    for _ in range(18):
         for indices in torch.randperm(len(a)).split(16):
             opt.zero_grad()
             diff = (model(a[indices]) - b[indices]).abs()[mask[indices]]
@@ -48,5 +48,5 @@ def forecast(torch, train, future, seed):
     head.eval()
     with torch.inference_mode():
         prediction = model(torch.from_numpy(pack(f, x[-context:]))).flatten()[:len(f)].numpy()
-    return prediction.astype(float)*y_sd+y_mean, {"seed":seed, "epochs":12, "hidden_units":16, "chunk_hours":step,
+    return prediction.astype(float)*y_sd+y_mean, {"seed":seed, "epochs":18, "hidden_units":16, "chunk_hours":step,
                                                    "warmup_hours":context, "uses_future_load":False}

@@ -41,7 +41,7 @@
     }
   },
   "gam_thermal": {
-    "recipe": "weekday_weekend_hour",
+    "recipe": "weekday_weekend_with_linear_trend",
     "settings": {
       "weather_columns": [
         "temperature_zagreb_c",
@@ -73,11 +73,12 @@
       "trend": "n",
       "enforce_stationarity": true,
       "enforce_invertibility": true,
-      "hour_by_weekend": true
+      "hour_by_weekend": true,
+      "linear_trend": true
     }
   },
   "lightgbm_thermal": {
-    "recipe": "trees320",
+    "recipe": "trees320_thermal24_72",
     "settings": {
       "boosting_type": "gbdt",
       "class_weight": null,
@@ -89,7 +90,7 @@
       "min_child_weight": 0.001,
       "min_split_gain": 0.0,
       "n_estimators": 320,
-      "n_jobs": 2,
+      "n_jobs": 1,
       "num_leaves": 31,
       "objective": "regression_l1",
       "random_state": 42,
@@ -100,11 +101,15 @@
       "subsample_freq": 0,
       "deterministic": true,
       "force_col_wise": true,
-      "verbosity": -1
+      "verbosity": -1,
+      "temperature_average_hours": [
+        24,
+        72
+      ]
     }
   },
   "random_forest": {
-    "recipe": "trees_200",
+    "recipe": "trees200_thermal24_72",
     "settings": {
       "bootstrap": true,
       "ccp_alpha": 0.0,
@@ -119,11 +124,15 @@
       "min_weight_fraction_leaf": 0.0,
       "monotonic_cst": null,
       "n_estimators": 200,
-      "n_jobs": 2,
+      "n_jobs": 1,
       "oob_score": false,
       "random_state": 42,
       "verbose": 0,
-      "warm_start": false
+      "warm_start": false,
+      "temperature_average_hours": [
+        24,
+        72
+      ]
     }
   },
   "ffn": {
@@ -160,7 +169,7 @@
     }
   },
   "tcn_median": {
-    "recipe": "context25",
+    "recipe": "prior_year_load",
     "settings": {
       "aggregation": "hourwise median",
       "fits": {
@@ -173,13 +182,14 @@
             8
           ],
           "kernel": 3,
-          "epochs": 14,
+          "epochs": 28,
           "batch_chunks": 8,
           "chunk_hours": 672,
           "loss": "L1",
           "learning_rate": 0.002,
           "optimizer": "AdamW",
-          "weather_only_history_hours": 24
+          "causal_padding_hours": 24,
+          "uses_previous_year_load": true
         },
         "43": {
           "seed": 43,
@@ -190,13 +200,14 @@
             8
           ],
           "kernel": 3,
-          "epochs": 14,
+          "epochs": 28,
           "batch_chunks": 8,
           "chunk_hours": 672,
           "loss": "L1",
           "learning_rate": 0.002,
           "optimizer": "AdamW",
-          "weather_only_history_hours": 24
+          "causal_padding_hours": 24,
+          "uses_previous_year_load": true
         },
         "44": {
           "seed": 44,
@@ -207,22 +218,23 @@
             8
           ],
           "kernel": 3,
-          "epochs": 14,
+          "epochs": 28,
           "batch_chunks": 8,
           "chunk_hours": 672,
           "loss": "L1",
           "learning_rate": 0.002,
           "optimizer": "AdamW",
-          "weather_only_history_hours": 24
+          "causal_padding_hours": 24,
+          "uses_previous_year_load": true
         }
       }
     }
   },
   "lstm": {
-    "recipe": "existing",
+    "recipe": "epochs18",
     "settings": {
       "seed": 42,
-      "epochs": 12,
+      "epochs": 18,
       "hidden_units": 16,
       "chunk_hours": 336,
       "warmup_hours": 24,
@@ -230,7 +242,7 @@
     }
   },
   "nhits": {
-    "recipe": "168_center_day",
+    "recipe": "weekly_centered",
     "settings": {
       "class": "NHITS",
       "options": {
@@ -241,16 +253,16 @@
         ],
         "mlp_units": [
           [
-            64,
-            64
+            128,
+            128
           ],
           [
-            64,
-            64
+            128,
+            128
           ],
           [
-            64,
-            64
+            128,
+            128
           ]
         ],
         "n_pool_kernel_size": [
@@ -266,7 +278,7 @@
       },
       "horizon_hours": 168,
       "context_hours": 168,
-      "steps": 260,
+      "steps": 520,
       "features": [
         "temperature_zagreb_c",
         "temperature_split_c",
@@ -293,7 +305,7 @@
     }
   },
   "tft": {
-    "recipe": "336_nonoverlap",
+    "recipe": "fortnightly_blocks",
     "settings": {
       "class": "TFT",
       "options": {
@@ -303,7 +315,7 @@
       },
       "horizon_hours": 336,
       "context_hours": 336,
-      "steps": 220,
+      "steps": 880,
       "features": [
         "temperature_zagreb_c",
         "temperature_split_c",
@@ -329,7 +341,7 @@
     }
   },
   "chronos2": {
-    "recipe": "native_median",
+    "recipe": "historical_level_calibration",
     "settings": {
       "configuration": {
         "checkpoint": "amazon/chronos-2",
@@ -340,16 +352,18 @@
         "point": "median",
         "unrolled_quantiles": [
           0.5
-        ]
+        ],
+        "level_history_years": 3,
+        "level_weight": 0.5
       },
       "effective_context_rows": 8192,
       "checkpoint_sha256": "ddcda3c7508bf2528087723e98a20707cc04b7f370ae275a9fd88078ddba4f42"
     }
   },
   "timesfm3": {
-    "recipe": "context16384",
+    "recipe": "context12288",
     "settings": {
-      "past_context_hours": 16384,
+      "past_context_hours": 12288,
       "checkpoint_sha256": "a7592b0a8432baee54483254e5647856911ce69e09d09a9bb65904b2d98f17da",
       "revision": "43046b85ec22d584a13f8098c2ed39c889e129c2",
       "known_future_features": [
@@ -362,7 +376,8 @@
         "weekend",
         "is_holiday"
       ],
-      "point_quantile": 0.5
+      "point_quantile": 0.5,
+      "attention_backend": "math"
     }
   }
 }

@@ -1,7 +1,4 @@
-"""TimesFM-3 inference with a pinned checkpoint and 16,384 history hours."""
-from contextlib import contextmanager
-from unittest.mock import patch
-
+"""TimesFM-3 inference with a pinned checkpoint and 12,288 history hours."""
 import numpy as np
 import pandas as pd
 
@@ -20,7 +17,7 @@ def forecast(torch, train, future, folder):
     receipt = read_json(ROOT / "configs" / "checkpoints.json")["timesfm3"]
     path = folder / "model.safetensors"
     cfg = read_json(folder / "config.json")
-    cover = 16384
+    cover = 12288
     past, known = (inputs(frame) for frame in (train.tail(cover).reset_index(drop=True), future))
     features = [*WEATHER, "hour_sin", "hour_cos", "weekend", "is_holiday"]
     matrix = pd.concat([past[features], known[features]], ignore_index=True).to_numpy(dtype=np.float32).T
@@ -36,55 +33,10 @@ def forecast(torch, train, future, folder):
     assert all(not tensor.is_meta for tensor in model.buffers())
     model.eval()
     # Fix the kernel across runs while retaining the same attention mask and weights.
-    with torch.inference_mode(), sdpa_kernel(SDPBackend.MATH), bounded_attention(torch) as proof:
+    with torch.inference_mode(), sdpa_kernel(SDPBackend.MATH):
         pred = model.decode(target, horizon=len(future), past_future_covariates=covs)
-    assert proof.get("same_attention_axis")
     assert pred.shape == (1, 1 + len(features), len(future), len(cfg["quantiles"]))
     values = pred[0, 0, :, cfg["quantiles"].index(.5)].numpy()
     return values, {
         "past_context_hours": cover, "checkpoint_sha256": receipt["sha256"], "revision": receipt["revision"],
-        "known_future_features": features, "point_quantile": .5, "attention_batch_check": proof}
-
-
-@contextmanager
-def bounded_attention(torch):
-    """Limit peak CPU memory by splitting independent batches of attention calls.
-
-    Each chunk uses the original attention function with the full attention
-    axis intact. A small fixture checks numerical agreement and identical masks.
-    The context manager restores the original method after decoding.
-    """
-    from timesfm3.torch.transformer import MultiHeadAttention
-
-    full = MultiHeadAttention.forward
-    proof = {}
-
-    def chunks(self, tensor, options, width):
-        outputs, masks = [], []
-        for index in range(0, len(tensor), width):
-            section = slice(index, index + width)
-            local = {key: value[section] if value is not None else None for key, value in options.items()}
-            output, cache, mask = full(self, tensor[section], **local)
-            assert cache is None
-            outputs.append(output)
-            masks.append(mask)
-        return torch.cat(outputs), None, torch.cat(masks)
-
-    def forward(self, inputs_q, **options):
-        width = 2 if inputs_q.shape[1] > 256 else 96
-        if len(inputs_q) <= width:
-            return full(self, inputs_q, **options)
-        assert options.pop("decode_cache", None) is None
-        if not proof:
-            fixture = inputs_q[:4, :64]
-            local = {key: value[:4, :64] if value is not None else None for key, value in options.items()}
-            baseline, _, mask = full(self, fixture, **local)
-            partitioned, _, other_mask = chunks(self, fixture, local, 2)
-            torch.testing.assert_close(partitioned, baseline, rtol=2e-5, atol=2e-5)
-            torch.testing.assert_close(other_mask, mask, rtol=0, atol=0)
-            proof.update({"fixture_max_abs": (partitioned - baseline).abs().max().item(),
-                          "same_attention_axis": True})
-        return chunks(self, inputs_q, options, width)
-
-    with patch.object(MultiHeadAttention, "forward", forward):
-        yield proof
+        "known_future_features": features, "point_quantile": .5, "attention_backend": "math"}

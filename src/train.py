@@ -40,6 +40,8 @@ def checkpoint(method, cache):
 
 def generate(method, train, future, checkpoints):
     """Use historical load and forecast covariates to return one MW value per hour."""
+    if "demand_mw" in future:
+        raise ValueError("Forecast inputs cannot contain observed target-year demand.")
     if method in CLASSICAL:
         result = CLASSICAL[method](train, future)
         return result[0] if isinstance(result, tuple) else result
@@ -51,7 +53,7 @@ def generate(method, train, future, checkpoints):
 
     import torch
 
-    torch.set_num_threads(2)
+    torch.set_num_threads(2 if method == "timesfm3" else 1)
     torch.set_num_interop_threads(1)
     torch.manual_seed(42)
     torch.use_deterministic_algorithms(True)
@@ -81,7 +83,8 @@ def train_one(year, method, inputs, outputs, checkpoints, verify, protocol):
     history, future = map(pd.read_parquet, paths)
     validate(history, future, year)
     print(f"{year} {method}: generating {len(future):,} hours", flush=True)
-    with threadpool_limits(limits=2):
+    threads = 2 if method in ("calendar_recent", "sarimax", "ffn", *PRETRAINED) else 1
+    with threadpool_limits(limits=threads):
         result = np.asarray(generate(method, history, future, checkpoints), dtype=float)
     require(result.shape == (len(future),) and np.isfinite(result).all() and (result > 0).all(),
             f"{year} {method}: forecast must have one positive finite value per hour.")

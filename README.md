@@ -8,7 +8,7 @@ Two profiles with the same annual energy can have different peaks and ramps. Tho
 
 ## Models and results
 
-For 2023–2025, **TimesFM-3** had the lowest mean raw hourly MAE (94.98 MW). **LightGBM** had the lowest mean shape MAE (90.44 MW) and the lowest raw MAE among workflows without external pretraining (110.11 MW). See the [checkpoint limitations](docs/methodology.md#pretrained-checkpoints).
+For 2023–2025, **TimesFM-3** had the lowest mean raw hourly MAE (93.36 MW). **TCN** led on raw MAE among workflows without external pretraining (103.07 MW). **LightGBM** had the lowest mean shape MAE (86.95 MW). See the [checkpoint limitations](docs/methodology.md#pretrained-checkpoints).
 
 Raw MAE scores the forecast as generated. Shape MAE scales the profile to the observed annual energy for scoring only. Both measure mean absolute hourly error in MW and weight each year equally.
 
@@ -16,18 +16,18 @@ Model names link to their Python implementations. Use the ID with `src/train.py 
 
 | Model code | `--model` ID | Raw hourly MAE (MW) | Equal-energy shape MAE (MW) |
 |---|---|---:|---:|
-| [TimesFM-3](src/models/timesfm3.py) | `timesfm3` | **94.98** | 94.25 |
-| [LightGBM](src/models/lightgbm.py) | `lightgbm_thermal` | 110.11 | **90.44** |
+| [TimesFM-3](src/models/timesfm3.py) | `timesfm3` | **93.36** | 92.68 |
+| [TCN](src/models/tcn.py) | `tcn_median` | 103.07 | 94.08 |
+| [GAM](src/models/gam.py) | `gam_thermal` | 107.38 | 105.36 |
+| [LightGBM](src/models/lightgbm.py) | `lightgbm_thermal` | 107.69 | **86.95** |
+| [Random Forest](src/models/random_forest.py) | `random_forest` | 109.82 | 90.97 |
 | [MLP](src/models/mlp.py) | `ffn` | 111.13 | 91.06 |
-| [Random Forest](src/models/random_forest.py) | `random_forest` | 111.44 | 93.51 |
-| [GAM](src/models/gam.py) | `gam_thermal` | 118.06 | 105.10 |
-| [LSTM](src/models/lstm.py) | `lstm` | 118.52 | 103.22 |
-| [TCN](src/models/tcn.py) | `tcn_median` | 123.17 | 102.71 |
-| [TFT](src/models/tft.py) | `tft` | 124.12 | 113.92 |
-| [N-HiTS](src/models/nhits.py) | `nhits` | 128.52 | 117.27 |
+| [N-HiTS](src/models/nhits.py) | `nhits` | 116.95 | 106.35 |
+| [LSTM](src/models/lstm.py) | `lstm` | 119.06 | 101.37 |
+| [TFT](src/models/tft.py) | `tft` | 132.55 | 104.36 |
 | [Calendar baseline](src/models/calendar_baseline.py) | `calendar_recent` | 140.48 | 135.68 |
 | [SARIMAX](src/models/sarimax.py) | `sarimax` | 160.18 | 151.37 |
-| [Chronos-2](src/models/chronos2.py) | `chronos2` | 287.18 | 277.29 |
+| [Chronos-2](src/models/chronos2.py) | `chronos2` | 274.91 | 277.29 |
 
 [Per-year scores and observed-vs-forecast curves](docs/retrospective.md) · [Development results for 2019–2022](docs/results.md)
 

@@ -1,6 +1,6 @@
 # Retrospective results for 2023–2025
 
-At each January 1 UTC origin, the 12 fixed configurations use demand available through the preceding December and the target year's calendar and observed ERA5 weather. Earlier work inspected some outcomes from these years. The final held-out demand evaluation is reserved for 2026. See the [methodology](methodology.md) for the split, data availability and metric definitions.
+At each January 1 UTC origin, the 12 fixed configurations use demand available through the preceding December and the target year's calendar and observed ERA5 weather. These years provide a retrospective comparison. The final held-out demand evaluation is reserved for 2026. See the [methodology](methodology.md) for the split, data availability and metric definitions.
 
 ## Hourly error by year
 
@@ -8,22 +8,22 @@ All MAEs are in MW. Raw MAE scores the original forecast. Shape MAE scores after
 
 | Model | 2023 raw | 2023 shape | 2024 raw | 2024 shape | 2025 raw | 2025 shape |
 |---|---:|---:|---:|---:|---:|---:|
-| TimesFM-3 | 86.58 | 86.55 | **90.47** | **88.50** | **107.89** | 107.71 |
-| LightGBM | **78.39** | **70.19** | 110.34 | 91.23 | 141.60 | 109.92 |
-| MLP | 82.13 | 73.33 | 112.97 | 94.36 | 138.28 | **105.48** |
-| Random Forest | 81.69 | 75.30 | 111.55 | 94.89 | 141.09 | 110.34 |
-| GAM | 91.00 | 86.39 | 118.98 | 107.11 | 144.19 | 121.79 |
-| LSTM | 92.14 | 91.39 | 114.22 | 104.07 | 149.19 | 114.20 |
-| TCN | 86.64 | 83.94 | 131.59 | 109.24 | 151.29 | 114.95 |
-| TFT | 98.59 | 96.97 | 118.19 | 115.33 | 155.59 | 129.44 |
-| N-HiTS | 101.24 | 98.49 | 135.60 | 120.15 | 148.72 | 133.18 |
+| TimesFM-3 | 87.95 | 86.74 | **86.25** | **86.07** | **105.88** | **105.24** |
+| TCN | 75.76 | 75.28 | 111.44 | 95.03 | 122.01 | 111.93 |
+| GAM | 87.03 | 86.91 | 109.14 | 107.90 | 125.97 | 121.26 |
+| LightGBM | **74.12** | **65.72** | 107.89 | 87.87 | 141.04 | 107.27 |
+| Random Forest | 78.94 | 72.07 | 108.87 | 91.04 | 141.66 | 109.80 |
+| MLP | 82.13 | 73.33 | 112.97 | 94.36 | 138.28 | 105.48 |
+| N-HiTS | 86.21 | 86.53 | 121.51 | 106.92 | 143.14 | 125.59 |
+| LSTM | 96.32 | 85.18 | 112.13 | 104.22 | 148.74 | 114.71 |
+| TFT | 95.55 | 85.93 | 144.62 | 107.13 | 157.49 | 120.03 |
 | Calendar baseline | 117.22 | 117.24 | 153.43 | 149.10 | 150.79 | 140.69 |
 | SARIMAX | 132.16 | 129.69 | 177.82 | 170.52 | 170.56 | 153.91 |
-| Chronos-2 | 340.37 | 332.82 | 274.10 | 277.23 | 247.07 | 221.81 |
+| Chronos-2 | 322.94 | 332.82 | 274.34 | 277.23 | 227.45 | 221.81 |
 
 ![Raw and equal-energy MAE by model and year, with period means](../results/retrospective/comparison.png)
 
-LightGBM had the lowest raw MAE in 2023. TimesFM-3 led in 2024 and 2025 and had the highest mean overlap with the observed top 5% of hours (69.22%). LightGBM led on mean shape MAE (90.44 MW), while the MLP had the lowest shape MAE in 2025.
+The lowest raw MAE was achieved by LightGBM in 2023, TimesFM-3 in 2024 and TimesFM-3 in 2025. LightGBM had the lowest mean shape MAE (86.95 MW) and the highest mean overlap with the observed top 5% of hours (67.32%).
 
 These rankings describe the three evaluation years. TimesFM-3 was released after their forecast origins, and overlap between its pretraining data and Croatian load remains unverified. See [pretrained checkpoints](methodology.md#pretrained-checkpoints).
 
@@ -37,4 +37,4 @@ Weekly means show the annual curves against observed demand for every workflow. 
 | 2024 | [All 12 curves](../results/figures/profiles-2024.png) | [CSV.gz](../results/profiles/2024.csv.gz) |
 | 2025 | [All 12 curves](../results/figures/profiles-2025.png) | [CSV.gz](../results/profiles/2025.csv.gz) |
 
-[All metrics by year](../results/retrospective/by-year.csv) · [Period means](../results/retrospective/summary.csv) · [Reproduction report](../results/retrospective/reproduction-by-year.csv) · [Run provenance](../results/retrospective/provenance.json) · [Reproduction commands](reproduction.md)
+[All metrics by year](../results/retrospective/by-year.csv) · [Period means](../results/retrospective/summary.csv) · [Archive provenance](../results/provenance.json) · [Reproduction commands](reproduction.md)

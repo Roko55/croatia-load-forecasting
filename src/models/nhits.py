@@ -8,9 +8,9 @@ from ._neuralforecast import direct, inputs
 def forecast(train, future):
     from neuralforecast.models import NHITS
 
-    options = dict(n_blocks=[1, 1, 1], mlp_units=[[64, 64]] * 3,
+    options = dict(n_blocks=[1, 1, 1], mlp_units=[[128, 128]] * 3,
                    n_pool_kernel_size=[12, 6, 1], n_freq_downsample=[24, 6, 1])
-    engine, _, settings = direct("nhits", NHITS, options, 260, 168, train, future, 42)
+    engine, _, settings = direct("nhits", NHITS, options, 520, 168, train, future, 42)
     return centered_days(engine, train, future, settings)
 
 

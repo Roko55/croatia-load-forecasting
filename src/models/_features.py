@@ -21,18 +21,20 @@ def calendar(frame, weather):
     return x
 
 
-def trailing_temperatures(train, future):
-    """Use the current and previous 23 temperatures, including across Jan 1."""
-    columns = tuple(f'{name}_avg24' for name in WEATHER)
+def trailing_temperatures(train, future, windows=(24,)):
+    """Append trailing temperature averages across the forecast boundary."""
     history = train[list(WEATHER)]
     combined = pd.concat([history, future[list(WEATHER)]], ignore_index=True)
-    means = combined.rolling(24, min_periods=1).mean()
-    train = train.assign(**dict(zip(columns, means.iloc[:len(train)].to_numpy().T)))
-    future = future.assign(**dict(zip(columns, means.iloc[len(train):].to_numpy().T)))
-    np.testing.assert_allclose(
-        future.loc[0, list(columns)].to_numpy(dtype=float),
-        np.vstack([history.to_numpy()[-23:], future.loc[0, list(WEATHER)].to_numpy(dtype=float)]).mean(axis=0),
-        rtol=0, atol=1e-10,
-    )
-    assert 'demand_mw' not in future
-    return train, future, (*WEATHER, *columns)
+    feature_names = list(WEATHER)
+    for window in windows:
+        means = combined.rolling(window, min_periods=1).mean().add_suffix(f"_avg{window}")
+        train = train.assign(**dict(zip(means.columns, means.iloc[:len(train)].to_numpy().T, strict=True)))
+        future = future.assign(**dict(zip(means.columns, means.iloc[len(train):].to_numpy().T, strict=True)))
+        np.testing.assert_allclose(
+            means.iloc[len(train)].to_numpy(),
+            combined.iloc[max(0, len(train) - window + 1):len(train) + 1].mean().to_numpy(),
+            rtol=0, atol=1e-10,
+        )
+        feature_names.extend(means.columns)
+    assert "demand_mw" not in future
+    return train, future, tuple(feature_names)
