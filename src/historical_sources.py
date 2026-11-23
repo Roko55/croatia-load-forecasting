@@ -17,6 +17,7 @@ ARCHIVE_SHA = "3a762b8dcee5567cfc84912deee1bbe5e908553d813228634bbd43e7ff0a0b20"
 
 
 def read_legacy(path):
+    """Read Croatian load from the pinned workbook's local-date rows and hourly columns."""
     assert digest(path) == ARCHIVE_SHA
     hour_columns = [chr(i) for i in range(70, 91)] + ['AA', 'AB', 'AC']
     observed, days, ambiguous, nonexistent, invalid = {}, set(), [], [], []
@@ -58,6 +59,7 @@ def read_legacy(path):
 
 
 def read_bridge(path):
+    """Read Croatian UTC timestamps, demand and source coverage from the bridge workbook."""
     rows = []
     with ZipFile(path) as book:
         strings = [''.join(s.itertext()) for s in ElementTree.fromstring(book.read('xl/sharedStrings.xml'))]

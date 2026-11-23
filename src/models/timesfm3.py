@@ -48,6 +48,12 @@ def forecast(torch, train, future, folder):
 
 @contextmanager
 def bounded_attention(torch):
+    """Limit peak CPU memory by splitting independent batches of attention calls.
+
+    Each chunk uses the original attention function with the full attention
+    axis intact. A small fixture checks numerical agreement and identical masks.
+    The context manager restores the original method after decoding.
+    """
     from timesfm3.torch.transformer import MultiHeadAttention
 
     full = MultiHeadAttention.forward

@@ -2,6 +2,8 @@
 
 Twelve forecasting workflows generate full-year hourly electricity demand profiles for Croatia, conditional on observed ERA5 weather. **2019–2022** was used for model development. **2023–2025** compares the 12 fixed configurations retrospectively. **2026** is reserved for the final evaluation.
 
+Two profiles with the same annual energy can have different peaks and ramps. Those differences can affect capacity and storage decisions in energy-system planning.
+
 [Run the benchmark](docs/reproduction.md) · [Read the methodology](docs/methodology.md) · [Results by year](docs/retrospective.md) · [Download hourly profiles](results/profiles/)
 
 ## Models and results
@@ -36,7 +38,7 @@ Model names link to their Python implementations. Use the ID with `src/train.py 
 | Prepare inputs | [`src/training_inputs.py`](src/training_inputs.py) · [data sources](data/README.md) | Combines historical load, local calendar and ERA5. Writes a training file and a separate weather/calendar file per year. |
 | Generate forecasts | [`src/train.py`](src/train.py) · [model files](src/models/) | Loads the two input files, runs the selected model and writes its hourly MW forecast. |
 | Check results | [`src/audit.py`](src/audit.py) · [`results/`](results/) | Scores the archived forecasts against observed load and checks the published metrics. |
-| Find settings | [Model settings](configs/model-settings.json) · [time splits](configs/protocol.json) · [pretrained checkpoints](configs/checkpoints.json) | Documents model options, forecast periods and the sources used to reproduce them. |
+| Find settings | [Recorded model settings](configs/model-settings.json) · [evaluation protocol](configs/protocol.json) · [pretrained checkpoints](configs/checkpoints.json) | Model parameters are defined in the Python implementations. The settings JSON records them for reference. The runner reads the protocol and checkpoint manifest. |
 
 ## Reproduce the scores
 

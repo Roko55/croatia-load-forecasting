@@ -2,9 +2,30 @@
 
 For a scoring-only check, run `python src/audit.py --period all` with Python 3.12 or later. This uses the archived forecasts. The commands below generate forecasts from the source inputs.
 
-Use a fresh Python 3.12 virtual environment. The full CPU setup includes the
-six classical workflows, four fitted neural networks and two pretrained
-workflows.
+Clone the repository, then create and activate a Python 3.12 virtual environment.
+
+```sh
+git clone https://github.com/Roko55/croatia-load-forecasting.git
+cd croatia-load-forecasting
+```
+
+Windows (PowerShell)
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Linux (shell)
+
+```sh
+python3.12 -m venv .venv
+source .venv/bin/activate
+```
+
+Use the full CPU dependency set to generate forecasts and check them against the archive.
+The pinned PyTorch CPU build is available for Windows and Linux. The
+scoring-only command also works on macOS with Python 3.12 or later.
 
 ```sh
 python -m pip install -r requirements-neural.txt
@@ -12,7 +33,7 @@ python src/training_inputs.py
 python src/train.py --year 2022 --verify
 ```
 
-The second command downloads the official ENTSO-E archives needed for
+`src/training_inputs.py` downloads the official ENTSO-E archives needed for
 historical fitting, generates Croatian holiday flags and combines these with
 the frozen ERA5 extract. It checks both input SHA-256 digests for each
 development year. Use `--cache PATH` to reuse verified source files.
@@ -48,6 +69,9 @@ Chronos-2 and TimesFM-3 download their pinned checkpoints on first run
 have no local weight-fitting stage. Reuse verified downloads with
 `--checkpoints PATH`, using the subdirectories `chronos2` and `timesfm3`
 with `config.json` and `model.safetensors` inside each.
+
+The archive contains hourly predictions. The locally fitted workflows are
+fitted again each time you regenerate a profile.
 
 Verification compares every generated hour with its archived point forecast.
 The maximum allowed difference is 0.005 MW for the locally fitted workflows

@@ -17,6 +17,7 @@ def inputs(data):
 
 
 def block_starts(count, horizon):
+    """Cover all hours with full windows, overlapping the last one if needed."""
     if horizon < 1 or count < horizon:
         raise ValueError(f"Forecast requires at least one complete {horizon}-hour window (got {count} hours).")
     starts = list(range(0, count - horizon + 1, horizon))
@@ -26,6 +27,7 @@ def block_starts(count, horizon):
 
 
 def direct(model, cls, options, steps, horizon, train, future, seed):
+    """Fit on historical demand and return the engine, forecast in MW and settings."""
     starts = block_starts(len(future), horizon)
 
     import logging
@@ -53,7 +55,8 @@ def direct(model, cls, options, steps, horizon, train, future, seed):
     engine.fit(df=history, val_size=0, verbose=False)
     assert engine.models[0].exclude_insample_y
 
-    # Every forecast block is a separate series with covariates and a constant dummy target.
+    # The library expects a target column in each context. Use a placeholder
+    # because exclude_insample_y keeps past target values out of model inputs.
     source = pd.concat([history[known.columns].tail(horizon), known], ignore_index=True)
     contexts, blocks = [], []
     for index in starts:

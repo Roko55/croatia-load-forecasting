@@ -35,4 +35,4 @@ The seven-day window is centred on the highest observed load in 2022. The top pa
 
 ## Scope
 
-The forecasts use observed ERA5 weather. This evaluates how the workflows reproduce load under a known weather path. The final 2026 comparison and the effect of the demand profiles on H2RES planning remain open.
+The forecasts use observed ERA5 weather. This evaluates how the workflows reproduce load under a known weather path. The final 2026 comparison and the evaluation of demand profiles in H2RES, an energy-system planning model, are future steps.

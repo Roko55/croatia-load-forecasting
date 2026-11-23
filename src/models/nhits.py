@@ -15,6 +15,7 @@ def forecast(train, future):
 
 
 def centered_days(engine, train, future, receipt):
+    """Use the centre day of each weekly forecast where the year boundaries allow it."""
     horizon, day = 168, 24
     history, known = inputs(train), inputs(future)
     features = receipt["features"]
@@ -23,6 +24,8 @@ def centered_days(engine, train, future, receipt):
         frame[features] = (frame[features] - center) / scale
     source = pd.concat([history.tail(horizon), known], ignore_index=True)
     days = range(0, len(known), day)
+    # Keep each day away from window edges where possible, and keep every
+    # weekly window within the target year.
     starts = [min(max(i - (horizon-day)//2, 0), len(known)-horizon) for i in days]
     contexts, blocks = [], []
     for start in sorted(set(starts)):

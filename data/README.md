@@ -35,9 +35,12 @@ gaps using up to two preceding hours of carry-forward. The scoring inputs
 use source observations directly.
 
 The two ERA5 Parquet extracts contain UTC timestamps and the four
-cities' 2-metre temperatures for 2006–2025, with the original numeric values preserved. Contains
-modified Copernicus Climate Change Service information (2006–2025), via
-the [Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api).
+cities' 2-metre temperatures for 2006–2025, with the original numeric values preserved.
+The temperatures were obtained via the
+[Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api).
 The upstream ERA5 product is available from the
 [Copernicus Climate Data Store](https://doi.org/10.24381/cds.adbb2d47).
+
+Attribution for both extracts is “Contains modified Copernicus Climate Change
+Service information (2006–2025).”
 The weather extract is provided under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

@@ -147,6 +147,7 @@ class Features:
         return np.where(np.isnan(x), self.medians, x)
 
     def linear(self, f, fit=False):
+        """Build the regression matrix from calendar harmonics and weather."""
         if not 0 <= self.config.annual_harmonics <= 6:
             raise ValueError("annual_harmonics must be in [0, 6]")
         if fit and self.config.annual_harmonics and len(f) < 8760:
@@ -159,6 +160,7 @@ class Features:
                 terms.extend([np.sin(2 * np.pi * k * phase), np.cos(2 * np.pi * k * phase)])
         x = np.column_stack(terms + [self.weather(f, fit=fit)])
         if fit:
+            # Reuse training statistics at forecast time and drop constant features.
             self.mean = x.mean(axis=0)
             self.scale = x.std(axis=0)
             self.keep = self.scale > 1e-10
@@ -170,6 +172,7 @@ def periodic_basis(phase, n):
     knots = np.arange(-3, n + 4, dtype=float) / n
     raw = BSpline.design_matrix(np.asarray(phase) % 1, knots, 3).toarray()
     out = np.zeros((len(phase), n))
+    # Tie coefficients across the cycle boundary and penalize wrapped curvature.
     for j in range(raw.shape[1]):
         out[:, j % n] += raw[:, j]
     d = np.eye(n) - 2 * np.roll(np.eye(n), 1, axis=1) + np.roll(np.eye(n), 2, axis=1)
@@ -185,6 +188,7 @@ class PenalizedGAM(Base):
     model_id = "penalized_additive_gam_v1"
 
     def _design(self, f, fit=False):
+        """Combine hour, year, temperature and weekday effects into an additive design."""
         hour, dow, _, year = calendar(f)
         blocks, penalties = [], []
         for phase, n in [(hour / 24, 12), (year, 12)]:
@@ -193,6 +197,7 @@ class PenalizedGAM(Base):
             penalties.append(p)
         weather = self.features.weather(f, fit=fit)
         if fit:
+            # Place knots using training quantiles and reuse the same basis for prediction.
             self.knots = []
             for j in range(weather.shape[1]):
                 breaks = np.unique(np.quantile(weather[:, j], np.linspace(0, 1, self.config.spline_intervals + 1)))
@@ -203,6 +208,7 @@ class PenalizedGAM(Base):
         for j, knots in enumerate(self.knots):
             if knots is None:
                 continue
+            # Evaluate temperatures outside the training range at the nearest boundary.
             b = BSpline.design_matrix(np.clip(weather[:, j], knots[3], knots[-4]), knots, 3).toarray()
             d = np.diff(np.eye(b.shape[1]), n=2, axis=0)
             blocks.append(b)
@@ -223,6 +229,7 @@ class PenalizedGAM(Base):
         self.features = Features(self.config)
         x = self._design(f, fit=True)
         reg = self.config.smoothing * self.penalty + self.config.ridge * np.eye(x.shape[1])
+        # Penalize curvature within smooth terms and leave the intercept unpenalized.
         reg[0, 0] = 0
         with threadpool_limits(limits=2):
             self.coef = np.linalg.solve(x.T @ x + reg, x.T @ f.demand_mw.to_numpy(dtype=float))

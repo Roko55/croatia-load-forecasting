@@ -22,7 +22,12 @@ def forecast(train, future):
 
 
 def conditional_sarimax(train, future, weather=WEATHER, features_class=Features):
-    """Fit the daily seasonal SARIMAX using conditional AR innovations."""
+    """Fit a regression with daily seasonal AR errors and forecast demand in MW.
+
+    For each pair of AR coefficients, filter the target and regressors by
+    (1 - phi L)(1 - Phi L**24), where L shifts a series back one hour.
+    Fit the regression on the filtered data and minimize its innovation variance.
+    """
     from scipy.linalg import qr
     from scipy.optimize import minimize
 
@@ -37,7 +42,8 @@ def conditional_sarimax(train, future, weather=WEATHER, features_class=Features)
     series = np.column_stack([x, (y - mean) / scale])
     lags = (0, 1, 24, 25)
     segments = [series[25 - lag:len(series) - lag] for lag in lags]
-    # A single Gram matrix gives cross-products of all four filtered terms.
+    # Cache cross-products of the four lagged blocks. Each candidate filter
+    # combines those cross-products without building a new hourly matrix.
     stacked = np.concatenate(segments, axis=1)
     width = series.shape[1]
     gram = (stacked.T @ stacked).reshape(4, width, 4, width)
@@ -63,6 +69,7 @@ def conditional_sarimax(train, future, weather=WEATHER, features_class=Features)
     residual = series[:, -1] - x @ beta
     direct = residual[25:] - phi * residual[24:-1] - seasonal * residual[1:-24] + phi * seasonal * residual[:-25]
     np.testing.assert_allclose(mse, np.mean(direct**2), rtol=1e-8, atol=1e-10)
+    # Initialize the AR forecast from historical residuals with zero future innovations.
     propagated = np.concatenate([residual[-25:], np.zeros(len(future))])
     for i in range(25, len(propagated)):
         propagated[i] = (phi * propagated[i - 1] + seasonal * propagated[i - 24]

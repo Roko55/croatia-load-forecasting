@@ -39,6 +39,7 @@ def checkpoint(method, cache):
 
 
 def generate(method, train, future, checkpoints):
+    """Use historical load and forecast covariates to return one MW value per hour."""
     if method in CLASSICAL:
         result = CLASSICAL[method](train, future)
         return result[0] if isinstance(result, tuple) else result
@@ -70,6 +71,7 @@ def generate(method, train, future, checkpoints):
 
 
 def train_one(year, method, inputs, outputs, checkpoints, verify, protocol):
+    """Validate the frozen inputs, generate the annual profile and write a UTC Parquet file."""
     fold = next(protocol[period][str(year)] for period in PERIODS if str(year) in protocol[period])
     directory = inputs / str(year)
     paths = directory / "training.parquet", directory / "covariates.parquet"
