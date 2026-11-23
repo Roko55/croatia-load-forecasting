@@ -18,7 +18,15 @@ Model settings were selected using 2019–2022. The 2017 and 2018 target years s
 
 The common forecast-year inputs are the calendar and observed ERA5 temperatures for Zagreb, Split, Rijeka and Osijek. The scores measure accuracy conditional on realized weather, which would be unavailable at the start of an operational year-ahead forecast. There is no refresh with measured demand during the forecast year. Historical gaps use past-only forward filling for at most two consecutive hours. Every reported target hour is source-valid.
 
-The calendar baseline uses local hour, day type and month with recent observations weighted more heavily. Locally fitted models share the history split, with model-specific features, objectives and training budgets. Chronos-2 and TimesFM-3 use frozen pretrained checkpoints and the last 8,192 and 16,384 historical hours, respectively. Their external pretraining overlap with Croatian load is unknown. Chronos-2 generates the full 8,760 or 8,784 hours through the library's
+The calendar baseline uses local hour, day type and month with recent observations weighted more heavily. Locally fitted models share the history split, with model-specific features, objectives and training budgets. SARIMAX estimates a regression with daily seasonal AR errors by conditional Gaussian innovations. N-HiTS and TFT are fitted to historical load and exclude the lagged target from their input context. They forecast the annual profile in windows from covariates.
+
+### Pretrained checkpoints
+
+Chronos-2 and TimesFM-3 use frozen checkpoints and the last 8,192 and 16,384 historical hours, respectively. The Croatian demand passed at inference ends before each forecast origin. Pretraining was performed by the model developers. The public descriptions leave it unverified whether the training corpora contain Croatian load or overlapping derived series. See the [Chronos-2 model card](https://huggingface.co/amazon/chronos-2#training-data) and [TimesFM-3 model card](https://huggingface.co/google/timesfm-3.0-pytorch#data).
+
+Amazon introduced Chronos-2 in October 2025. Google introduced TimesFM-3 on August 31, 2026, after every January 1 origin in this study, including the origin of the planned 2026 evaluation. Applying a checkpoint to an origin before its release is a retrospective simulation. Holding out 2026 demand in this project controls access during local fitting and inference. Pretraining independence for that year remains unverified. See the [Amazon announcement](https://www.amazon.science/blog/introducing-chronos-2-from-univariate-to-universal-forecasting) and [Google announcement](https://research.google/blog/timesfm-3-a-zero-shot-foundation-model-for-multivariate-forecasting/).
+
+Chronos-2 generates the full 8,760 or 8,784 hours through the library's
 long-horizon continuation, using its predicted median as feedback. This
 extends beyond the checkpoint's recommended 1,024 steps. Its score applies
 to this annual configuration. See the

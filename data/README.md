@@ -11,7 +11,8 @@ The archive download cache is ignored by Git. To use already downloaded copies o
 The research forecasts used [Copernicus ERA5 hourly single-level data](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels) and Croatian holiday and local-time features. The frozen input hashes appear in [the protocol](../configs/protocol.json). The metric audit only requires observed load and archived forecasts.
 
 The two external checkpoint references are [Chronos-2 (Apache 2.0)](https://huggingface.co/amazon/chronos-2) and
-[TimesFM-3 (TimesFM Non-Commercial License v1.0)](https://huggingface.co/google/timesfm-3.0-pytorch#license). Revisions and weight checksums are recorded in [the model settings](../configs/model-settings.json).
+[TimesFM-3 (TimesFM Non-Commercial License v1.0)](https://huggingface.co/google/timesfm-3.0-pytorch#license). Revisions and weight checksums are recorded in the [checkpoint manifest](../configs/checkpoints.json).
+The [TimesFM Non-Commercial License](https://huggingface.co/google/timesfm-3.0-pytorch/blob/43046b85ec22d584a13f8098c2ed39c889e129c2/LICENSE) governs use of the pinned model and restricts commercial or production use of its outputs. The project license covers its original software and documentation.
 
 ## Frozen forecasts
 

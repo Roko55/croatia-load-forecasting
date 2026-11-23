@@ -25,7 +25,7 @@ The table reports 2023–2025 means. Click a model name to open its Python imple
 
 **Raw hourly MAE** scores the forecast as generated. **Shape MAE** scores the same hourly profile after scaling its annual energy to the observed total. This scaling is applied only during evaluation. Both report mean absolute hourly error in MW, with equal weight per year.
 
-TimesFM-3 had the lowest raw MAE. LightGBM had the lowest MAE after matching annual energy.
+TimesFM-3 had the lowest mean raw MAE over 2023–2025. Among workflows without external pretraining, LightGBM had the lowest mean raw MAE. It also had the lowest mean shape MAE across all 12 workflows. The [methodology](docs/methodology.md#pretrained-checkpoints) explains checkpoint availability and the uncertainty about pretraining overlap.
 
 [Per-year scores and observed-vs-forecast curves](docs/retrospective.md) · [Development results for 2019–2022](docs/results.md)
 
@@ -41,3 +41,5 @@ TimesFM-3 had the lowest raw MAE. LightGBM had the lowest MAE after matching ann
 ## Reproduce the scores
 
 With Python 3.12 or later, run `python src/audit.py --period all` to recompute the published scores from the archived forecasts and source observations. See the [reproduction guide](docs/reproduction.md) to prepare inputs, rerun the models or rebuild figures.
+
+The original project code and its documentation are [MIT-licensed](LICENSE). See the [data and checkpoint terms](data/README.md) for third-party materials and restrictions on TimesFM-3 outputs.

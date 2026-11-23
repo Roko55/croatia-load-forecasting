@@ -52,9 +52,19 @@ with `config.json` and `model.safetensors` inside each.
 Verification compares every generated hour with its archived point forecast.
 The maximum allowed difference is 0.005 MW for the locally fitted workflows
 and calendar baseline, and 0.05 MW for the pretrained workflows. These
-limits check numerical reproduction against the archive. The recorded full
-reproduction used the pinned CPU environment on Windows and verified all
-48 regenerated profiles. The largest hourly difference was 0.00159 MW.
+limits check numerical reproduction against the archive. The recorded
+development reproduction verified all 48 profiles on Windows CPU. The
+largest hourly difference was 0.00159 MW.
+
+The full retrospective reproduction started from a clean checkout of
+[commit `2e9e43c`](https://github.com/Roko55/croatia-load-forecasting/tree/2e9e43caaeb58be26e16702411ad56e94c882934).
+The [execution report](../results/retrospective/reproduction-by-year.csv)
+records the largest hourly difference and tolerance for each of the 36
+profiles. The largest absolute difference across 315,648 hourly values
+was $9.10 \times 10^{-13}$ MW. The
+[provenance record](../results/retrospective/provenance.json)
+records the runtime, exact commands and input manifest hashes, as well as
+the code and driver used for the original archive.
 
 The preparation and generation commands accept 2019–2025. Input preparation defaults to 2019–2022. Each fold
 uses measured demand up to the preceding December 31 and supplies the target
@@ -66,6 +76,5 @@ respectively). The benchmark always supplies a full year.
 
 [GitHub Actions](https://github.com/Roko55/croatia-load-forecasting/actions)
 runs the workbook boundary, input schema, DST, scoring and TimesFM-3
-attention tests. The tests use fixtures and the packaged weather extracts.
-They require neither ENTSO-E archives nor pretrained weights. For the
-full experiment, use the reproduction commands above.
+attention tests with fixtures and packaged weather. Use the reproduction
+commands above for the full model runs and hour-by-hour comparisons.

@@ -1,21 +1,79 @@
 {
   "scope": "2023–2025 retrospective annual forecast evaluation, conditional on observed weather",
-  "fit_code_commit": "45ccfe6afeb371e27dbdcc92f56f67f95ed64b46",
-  "runtime": {
-    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
-    "numpy": "1.26.4",
-    "pandas": "2.2.3",
-    "pyarrow": "21.0.0",
-    "scipy": "1.13.1",
-    "scikit-learn": "1.7.2",
-    "lightgbm": "4.6.0",
-    "torch": "2.9.1+cpu",
-    "neuralforecast": "3.1.2",
-    "chronos-forecasting": "2.3.2",
-    "timesfm": "3.0.2"
+  "archived_generation": {
+    "model_code_commit": "45ccfe6afeb371e27dbdcc92f56f67f95ed64b46",
+    "driver": "Separate local driver using the committed model implementations and frozen annual inputs",
+    "driver_sha256": "2cdf8dd1e85ee9362d47987dbb62174458c24abd2e2833e5dde75384cc9d2281",
+    "run_manifest_sha256": "11dc755fb6dfe1d3bfea3f1d58fcd4033e4918bc1621c89c3fbe6bdb7f11ffa5",
+    "runtime": {
+      "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+      "numpy": "1.26.4",
+      "pandas": "2.2.3",
+      "pyarrow": "21.0.0",
+      "scipy": "1.13.1",
+      "scikit-learn": "1.7.2",
+      "lightgbm": "4.6.0",
+      "torch": "2.9.1+cpu",
+      "neuralforecast": "3.1.2",
+      "chronos-forecasting": "2.3.2",
+      "timesfm": "3.0.2"
+    },
+    "independent_score_check": {
+      "profiles": 36,
+      "per_year_metric_values": 288,
+      "period_mean_values": 96
+    }
   },
-  "source_run_sha256": "11dc755fb6dfe1d3bfea3f1d58fcd4033e4918bc1621c89c3fbe6bdb7f11ffa5",
-  "verified_profiles": 36,
-  "independent_annual_metric_checks": 288,
-  "independent_period_mean_checks": 96
+  "reproduction": {
+    "commit": "2e9e43caaeb58be26e16702411ad56e94c882934",
+    "check": "Full fit or frozen-checkpoint inference, compared hour by hour with the archived point forecasts.",
+    "platform": {
+      "system": "Windows",
+      "release": "11",
+      "architecture": "AMD64",
+      "device": "CPU"
+    },
+    "runtime": {
+      "python": "3.12.14",
+      "numpy": "1.26.4",
+      "pandas": "2.2.3",
+      "scipy": "1.13.1",
+      "statsmodels": "0.14.4",
+      "lightgbm": "4.6.0",
+      "scikit-learn": "1.7.2",
+      "pyarrow": "21.0.0",
+      "threadpoolctl": "3.6.0",
+      "tzdata": "2026.5",
+      "python-dateutil": "2.9.0.post0",
+      "joblib": "1.6.0",
+      "patsy": "1.0.3",
+      "torch": "2.9.1+cpu",
+      "transformers": "4.57.6",
+      "chronos-forecasting": "2.3.2",
+      "neuralforecast": "3.1.2",
+      "pytorch-lightning": "2.5.6",
+      "torchmetrics": "1.8.2",
+      "utilsforecast": "0.2.15",
+      "timesfm": "3.0.2",
+      "safetensors": "0.8.0",
+      "coreforecast": "0.0.16",
+      "lightning-utilities": "0.15.3",
+      "ray[tune]": "2.50.1"
+    },
+    "started_at_utc": "2026-11-23T07:34:21.521261+00:00",
+    "finished_at_utc": "2026-11-23T10:07:36.831038+00:00",
+    "commands": [
+      "python src/training_inputs.py --year 2023 2024 2025 --cache <source-cache>",
+      "python src/train.py --year 2023 2024 2025 --verify --checkpoints <checkpoint-cache>"
+    ],
+    "locked_inputs": {
+      "protocol_sha256": "46f625be223d90acbfb6a4ef3e9f7c8a03a3ec4478dbfb1a7e1a8f1a4f5aa98a",
+      "checkpoint_manifest_sha256": "74d540e57363202f5ac22dceddcc831356eebb1e3a07ae0769852ec16ef6c18a"
+    },
+    "profiles": 36,
+    "hours_compared": 315648,
+    "max_absolute_difference_mw": 9.094947017729282e-13,
+    "report": "reproduction-by-year.csv",
+    "report_sha256": "b520cf7bd90980cb1380eaf2750835594f36c6d9279ae3102688e010d5b2fb85"
+  }
 }

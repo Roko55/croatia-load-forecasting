@@ -23,7 +23,7 @@ All MAEs are in MW. Raw MAE scores the original forecast. Shape MAE scores after
 
 ![Raw and equal-energy MAE by model and year, with period means](../results/retrospective/comparison.png)
 
-TimesFM-3 had the lowest mean raw MAE (94.98 MW) and the highest overlap with the observed top 5% of hours (69.22%). LightGBM had the lowest mean shape MAE (90.44 MW), followed by the MLP (91.06 MW). In 2025, the lowest raw and shape errors came from TimesFM-3 and the MLP, respectively. These rankings describe the three forecast years.
+TimesFM-3 had the lowest mean raw MAE (94.98 MW) and the highest overlap with the observed top 5% of hours (69.22%). LightGBM led the workflows without external pretraining on mean raw MAE (110.11 MW) and had the lowest mean shape MAE overall (90.44 MW), followed by the MLP on shape MAE (91.06 MW). LightGBM had the lowest raw MAE in 2023, and TimesFM-3 led in 2024 and 2025. The MLP had the lowest shape MAE in 2025. These rankings describe three years, and the cause of the differences across years was outside the scope of this evaluation. TimesFM-3 was released after these forecast origins, and overlap between its pretraining data and Croatian load remains unverified. See [pretrained checkpoints](methodology.md#pretrained-checkpoints).
 
 ## Profiles and downloads
 
@@ -35,4 +35,4 @@ Weekly means show the annual curves against observed demand for every workflow. 
 | 2024 | [All 12 curves](../results/figures/profiles-2024.png) | [CSV.gz](../results/profiles/2024.csv.gz) |
 | 2025 | [All 12 curves](../results/figures/profiles-2025.png) | [CSV.gz](../results/profiles/2025.csv.gz) |
 
-[All metrics by year](../results/retrospective/by-year.csv) · [Period means](../results/retrospective/summary.csv) · [Run provenance](../results/retrospective/provenance.json) · [Reproduction commands](reproduction.md)
+[All metrics by year](../results/retrospective/by-year.csv) · [Period means](../results/retrospective/summary.csv) · [Reproduction report](../results/retrospective/reproduction-by-year.csv) · [Run provenance](../results/retrospective/provenance.json) · [Reproduction commands](reproduction.md)
