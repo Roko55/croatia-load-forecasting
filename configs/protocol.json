@@ -145,5 +145,67 @@
     "history_start_utc": "2006-01-01T00:00:00+00:00",
     "history_end_exclusive_utc": "2026-01-01T00:00:00+00:00",
     "status": "results pending"
+  },
+  "retrospective": {
+    "2023": {
+      "training_sha256": "007bb5814996cfabafba1cfdda6a6fb367aaf1a4ed181aecf006562141f89713",
+      "covariate_sha256": "291e645353a04459c229e813cc7439da39f71e66e48c35dcc74c00a87ca327d6",
+      "training_hours": 149016,
+      "forecast_hours": 8760,
+      "first_training_utc": "2006-01-01 00:00:00+00:00",
+      "last_training_utc": "2022-12-31 23:00:00+00:00",
+      "forecast_start_utc": "2023-01-01 00:00:00+00:00",
+      "forecast_end_exclusive_utc": "2024-01-01 00:00:00+00:00",
+      "forecast_columns": [
+        "timestamp_utc",
+        "is_holiday",
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c"
+      ],
+      "tcn_storage": "point_profile",
+      "forecast_export_sha256": "7caf7a2ab4ed60b5f742a004769f79363b035427ee478b9fd1a95bb502af93bd"
+    },
+    "2024": {
+      "training_sha256": "c056e1f713944077171c708f5ddbad0bc3dee639a7125f5d02e4043f3da3573f",
+      "covariate_sha256": "212b36559e59f0d0f1158efcc19567c909cdb97b95c3524c14f9a8b39979f84b",
+      "training_hours": 157776,
+      "forecast_hours": 8784,
+      "first_training_utc": "2006-01-01 00:00:00+00:00",
+      "last_training_utc": "2023-12-31 23:00:00+00:00",
+      "forecast_start_utc": "2024-01-01 00:00:00+00:00",
+      "forecast_end_exclusive_utc": "2025-01-01 00:00:00+00:00",
+      "forecast_columns": [
+        "timestamp_utc",
+        "is_holiday",
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c"
+      ],
+      "tcn_storage": "point_profile",
+      "forecast_export_sha256": "7df2adedd6f54263dd8f44c72708a812c00d2ca663d57a73f9c8ebec1653169a"
+    },
+    "2025": {
+      "training_sha256": "a27edc13adc353f0e2207bfc5014af98497bf8121e573812216cc7cc811507c9",
+      "covariate_sha256": "5ac37b40c6a2f5bc4af523296d46d57e316918dc449e5982a5f14887b14c6414",
+      "training_hours": 166560,
+      "forecast_hours": 8760,
+      "first_training_utc": "2006-01-01 00:00:00+00:00",
+      "last_training_utc": "2024-12-31 23:00:00+00:00",
+      "forecast_start_utc": "2025-01-01 00:00:00+00:00",
+      "forecast_end_exclusive_utc": "2026-01-01 00:00:00+00:00",
+      "forecast_columns": [
+        "timestamp_utc",
+        "is_holiday",
+        "temperature_zagreb_c",
+        "temperature_split_c",
+        "temperature_rijeka_c",
+        "temperature_osijek_c"
+      ],
+      "tcn_storage": "point_profile",
+      "forecast_export_sha256": "7c3ec48c4fcd0b78a957499e1b5e8cfd7c85d5cf229550e2105bee4922516e34"
+    }
   }
 }

@@ -1,17 +1,18 @@
-"""Rebuild the frozen annual development inputs from public sources."""
+"""Rebuild frozen annual forecast inputs from public sources."""
 import argparse
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from audit import ROOT, digest, observed, read_json, require, source_file
+from audit import PERIODS, ROOT, digest, observed, read_json, require, source_file
 from historical_sources import ZAGREB, croatian_holidays, historical_holidays, read_bridge, read_legacy
 
 WEATHER = tuple(f"temperature_{city}_c" for city in ("zagreb", "split", "rijeka", "osijek"))
 COVARIATES = ["timestamp_utc", "is_holiday", *WEATHER]
 TRAINING = [*COVARIATES, "demand_mw"]
-YEARS = (2019, 2020, 2021, 2022)
+DEVELOPMENT_YEARS = (2019, 2020, 2021, 2022)
+YEARS = (*DEVELOPMENT_YEARS, 2023, 2024, 2025)
 START = pd.Timestamp("2006-01-01", tz="UTC")
 
 
@@ -24,7 +25,7 @@ def time_grid(left, right):
 
 
 def validate(train, future, year):
-    require(year in YEARS, f"Unsupported development year: {year}")
+    require(year in YEARS, f"Unsupported evaluation year: {year}")
     require(list(train) == TRAINING and list(future) == COVARIATES,
             "Invalid input schema. Target-year covariates must contain only time, holiday flags and temperature.")
     for frame, first, last in ((train, START, boundary(year)), (future, boundary(year), boundary(year+1))):
@@ -66,13 +67,16 @@ def source_history(cache, years, manifest):
 
 
 def source_covariates(manifest):
-    record = manifest["weather"]
-    path = ROOT / "data" / record["file"]
-    require(digest(path) == record["sha256"], "Frozen weather file failed SHA-256 verification.")
-    weather = pd.read_parquet(path)
+    records = (manifest["weather"], manifest["weather_retrospective"])
+    parts = []
+    for record in records:
+        path = ROOT / "data" / record["file"]
+        require(digest(path) == record["sha256"], f"Weather checksum differs: {path.name}")
+        parts.append(pd.read_parquet(path))
+    weather = pd.concat(parts, ignore_index=True)
     require(list(weather) == ["timestamp_utc", *WEATHER], "Unexpected weather schema.")
     require(pd.DatetimeIndex(weather.timestamp_utc).equals(time_grid(START, boundary(max(YEARS)+1))),
-            "Weather time grid does not match the development period.")
+            "Weather time grid does not match the evaluation periods.")
     holidays = set().union(*(historical_holidays(y) if y < 2015 else croatian_holidays(y)
                              for y in range(START.year, max(YEARS)+2)))
     local_days = weather.timestamp_utc.dt.tz_convert(ZAGREB).dt.date
@@ -91,7 +95,8 @@ def write_frame(path, frame):
 
 
 def prepare(cache, destination, years):
-    pinned = read_json(ROOT / "configs" / "protocol.json")["development"]
+    protocol = read_json(ROOT / "configs" / "protocol.json")
+    pinned = {year: fold for period in PERIODS for year, fold in protocol[period].items()}
     manifest = read_json(ROOT / "data" / "training-sources.json")
     demand = source_history(cache, years, manifest)
     covariates = source_covariates(manifest)
@@ -120,7 +125,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cache", type=Path, default=ROOT / "data" / "cache")
     parser.add_argument("--output", type=Path, default=ROOT / "work" / "inputs")
-    parser.add_argument("--year", type=int, choices=YEARS, nargs="+", default=YEARS)
+    parser.add_argument("--year", type=int, choices=YEARS, nargs="+", default=DEVELOPMENT_YEARS)
     args = parser.parse_args()
     prepare(args.cache, args.output, args.year)
 

@@ -1,33 +1,33 @@
 # Croatian hourly electricity demand forecasting
 
-A comparison of **12 workflows** that generate full-year hourly Croatian electricity demand profiles. The development benchmark covers **2019–2022** and uses observed ERA5 weather. Actual load from each target year is used for scoring. The held-out year 2026 is reserved for final evaluation.
+Twelve forecasting workflows generate full-year hourly electricity demand profiles for Croatia, conditional on observed ERA5 weather. **2019–2022** was used for model development. **2023–2025** compares the 12 fixed configurations retrospectively. **2026** is reserved for the final evaluation.
 
-[Run the benchmark](docs/reproduction.md) · [Read the methodology](docs/methodology.md) · [Read the results](docs/results.md) · [Download hourly profiles](results/profiles/)
+[Run the benchmark](docs/reproduction.md) · [Read the methodology](docs/methodology.md) · [Results by year](docs/retrospective.md) · [Download hourly profiles](results/profiles/)
 
 ## Models and results
 
-Click a model name to open its Python implementation. Each file is in [src/models](src/models/) and exposes a `forecast` function. Use the ID in the second column with `src/train.py --model`.
+The table reports 2023–2025 means. Click a model name to open its Python implementation. Use the ID with `src/train.py --model`.
 
 | Model code | `--model` ID | Raw hourly MAE (MW) | Equal-energy shape MAE (MW) |
 |---|---|---:|---:|
-| [MLP](src/models/mlp.py) | `ffn` | **87.11** | 74.33 |
-| [LightGBM](src/models/lightgbm.py) | `lightgbm_thermal` | 88.94 | **72.87** |
-| [Random Forest](src/models/random_forest.py) | `random_forest` | 89.11 | 75.11 |
-| [TCN](src/models/tcn.py) | `tcn_median` | 95.66 | 84.65 |
-| [LSTM](src/models/lstm.py) | `lstm` | 97.40 | 83.31 |
-| [GAM](src/models/gam.py) | `gam_thermal` | 102.19 | 88.49 |
-| [N-HiTS](src/models/nhits.py) | `nhits` | 102.28 | 93.93 |
-| [TFT](src/models/tft.py) | `tft` | 103.47 | 86.94 |
-| [TimesFM-3](src/models/timesfm3.py) | `timesfm3` | 110.88 | 89.12 |
-| [Calendar baseline](src/models/calendar_baseline.py) | `calendar_recent` | 115.25 | 104.71 |
-| [SARIMAX](src/models/sarimax.py) | `sarimax` | 132.12 | 120.69 |
-| [Chronos-2](src/models/chronos2.py) | `chronos2` | 246.24 | 205.13 |
+| [TimesFM-3](src/models/timesfm3.py) | `timesfm3` | **94.98** | 94.25 |
+| [LightGBM](src/models/lightgbm.py) | `lightgbm_thermal` | 110.11 | **90.44** |
+| [MLP](src/models/mlp.py) | `ffn` | 111.13 | 91.06 |
+| [Random Forest](src/models/random_forest.py) | `random_forest` | 111.44 | 93.51 |
+| [GAM](src/models/gam.py) | `gam_thermal` | 118.06 | 105.10 |
+| [LSTM](src/models/lstm.py) | `lstm` | 118.52 | 103.22 |
+| [TCN](src/models/tcn.py) | `tcn_median` | 123.17 | 102.71 |
+| [TFT](src/models/tft.py) | `tft` | 124.12 | 113.92 |
+| [N-HiTS](src/models/nhits.py) | `nhits` | 128.52 | 117.27 |
+| [Calendar baseline](src/models/calendar_baseline.py) | `calendar_recent` | 140.48 | 135.68 |
+| [SARIMAX](src/models/sarimax.py) | `sarimax` | 160.18 | 151.37 |
+| [Chronos-2](src/models/chronos2.py) | `chronos2` | 287.18 | 277.29 |
 
 **Raw hourly MAE** scores the forecast as generated. **Shape MAE** scores the same hourly profile after scaling its annual energy to the observed total. This scaling is applied only during evaluation. Both report mean absolute hourly error in MW, with equal weight per year.
 
-The raw MAE leader changed every year. TimesFM-3 identified the highest-load hours best, matching 67.63% of the observed top 5% of hours on average.
+TimesFM-3 had the lowest raw MAE. LightGBM had the lowest MAE after matching annual energy.
 
-[Year-by-year leaders and peak/ramp results](docs/results.md) · [Full metric tables](results/summary.csv) · [Seed sensitivity](results/seed-sensitivity.csv)
+[Per-year scores and observed-vs-forecast curves](docs/retrospective.md) · [Development results for 2019–2022](docs/results.md)
 
 ## Repository map
 
@@ -38,10 +38,6 @@ The raw MAE leader changed every year. TimesFM-3 identified the highest-load hou
 | Check results | [`src/audit.py`](src/audit.py) · [`results/`](results/) | Scores the archived forecasts against observed load and checks the published metrics. |
 | Find settings | [Model settings](configs/model-settings.json) · [time splits](configs/protocol.json) · [pretrained checkpoints](configs/checkpoints.json) | Documents model options, forecast periods and the sources used to reproduce them. |
 
-## Compare the profiles
+## Reproduce the scores
 
-Weekly means by model for [2019](results/figures/profiles-2019.png), [2020](results/figures/profiles-2020.png), [2021](results/figures/profiles-2021.png) and [2022](results/figures/profiles-2022.png). Metrics use the original hourly values. See an [hourly peak-week example](docs/results.md#hourly-example).
-
-![Weekly mean observed and predicted load in 2022 for all 12 models](results/figures/profiles-2022.png)
-
-To check the published metrics with Python 3.12+, run `python src/audit.py`. For preparing data and generating forecasts, see the [reproduction guide](docs/reproduction.md).
+With Python 3.12 or later, run `python src/audit.py --period all` to recompute the published scores from the archived forecasts and source observations. See the [reproduction guide](docs/reproduction.md) to prepare inputs, rerun the models or rebuild figures.

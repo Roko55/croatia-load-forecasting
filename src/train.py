@@ -1,4 +1,4 @@
-"""Fit a development workflow and generate its complete annual load profile."""
+"""Run a locked workflow and generate its complete annual load profile."""
 import argparse
 import os
 from pathlib import Path
@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from threadpoolctl import threadpool_limits
 
-from audit import ROOT, digest, predictions, read_json, require, source_file
+from audit import PERIODS, ROOT, digest, predictions, read_json, require, source_file
 from models import (
     calendar_baseline, gam, lightgbm, lstm, mlp, nhits, random_forest, sarimax, tcn, tft,
 )
@@ -70,7 +70,7 @@ def generate(method, train, future, checkpoints):
 
 
 def train_one(year, method, inputs, outputs, checkpoints, verify, protocol):
-    fold = protocol["development"][str(year)]
+    fold = next(protocol[period][str(year)] for period in PERIODS if str(year) in protocol[period])
     directory = inputs / str(year)
     paths = directory / "training.parquet", directory / "covariates.parquet"
     for path, field in zip(paths, ("training_sha256", "covariate_sha256"), strict=True):

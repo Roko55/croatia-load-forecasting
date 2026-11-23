@@ -38,5 +38,31 @@
         18.695
       ]
     }
+  },
+  "weather_retrospective": {
+    "file": "era5-croatia-2023-2025.parquet",
+    "sha256": "82e8a7e446a3d5e27ede533dabcf06d8ffaa3e1debde124bf439604510e0cd3f",
+    "product": "ERA5 2-metre air temperature via Open-Meteo Historical Weather API",
+    "license": "CC-BY-4.0",
+    "timezone": "UTC",
+    "units": "degree Celsius",
+    "requested_sites": {
+      "Zagreb": [
+        45.815,
+        15.982
+      ],
+      "Split": [
+        43.508,
+        16.44
+      ],
+      "Rijeka": [
+        45.327,
+        14.442
+      ],
+      "Osijek": [
+        45.555,
+        18.695
+      ]
+    }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "scope": "2023–2025 retrospective annual forecast evaluation, conditional on observed weather",
+  "fit_code_commit": "45ccfe6afeb371e27dbdcc92f56f67f95ed64b46",
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "pyarrow": "21.0.0",
+    "scipy": "1.13.1",
+    "scikit-learn": "1.7.2",
+    "lightgbm": "4.6.0",
+    "torch": "2.9.1+cpu",
+    "neuralforecast": "3.1.2",
+    "chronos-forecasting": "2.3.2",
+    "timesfm": "3.0.2"
+  },
+  "source_run_sha256": "11dc755fb6dfe1d3bfea3f1d58fcd4033e4918bc1621c89c3fbe6bdb7f11ffa5",
+  "verified_profiles": 36,
+  "independent_annual_metric_checks": 288,
+  "independent_period_mean_checks": 96
+}

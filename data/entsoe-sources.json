@@ -30,5 +30,29 @@
     "sha256": "0f1ac6df29b7a388784b30dfa22e2af989e209f59d33e31a2b593e574ab1985b",
     "source_content_md5": "yRO2G3MdEYx1RV1ZMf8XEw==",
     "download_url": "https://eepublicdownloads.blob.core.windows.net/public-cdn-container/clean-documents/Publications/Statistics/2022/monthly_hourly_load_values_2022.csv"
+  },
+  "2023": {
+    "file": "monthly_hourly_load_values_2023.csv",
+    "url": "https://www.entsoe.eu/publications/data/power-stats/2023/monthly_hourly_load_values_2023.csv",
+    "bytes": 40263094,
+    "sha256": "96525a65332ab6bcb180f1e435eedd32941909beabe2cf2b44baac9650436528",
+    "source_content_md5": "ogyL68G1HNSG7mTiuKytmA==",
+    "download_url": "https://eepublicdownloads.blob.core.windows.net/public-cdn-container/clean-documents/Publications/Statistics/2023/monthly_hourly_load_values_2023.csv"
+  },
+  "2024": {
+    "file": "monthly_hourly_load_values_2024.csv",
+    "url": "https://www.entsoe.eu/publications/data/power-stats/2024/monthly_hourly_load_values_2024.csv",
+    "bytes": 40600671,
+    "sha256": "adcfe02c32f51babdb4ecc0a56391b1ecf9acb80c65aa974d2e543fd528434b7",
+    "source_content_md5": "Ir8ZM9G8TXvqDB+F/7Tblg==",
+    "download_url": "https://eepublicdownloads.blob.core.windows.net/public-cdn-container/clean-documents/Publications/Statistics/2024/monthly_hourly_load_values_2024.csv"
+  },
+  "2025": {
+    "file": "monthly_hourly_load_values_2025.csv",
+    "url": "https://www.entsoe.eu/publications/data/power-stats/2025/monthly_hourly_load_values_2025.csv",
+    "bytes": 44358281,
+    "sha256": "cb18e827305823d5a773755ea4b066e4758205674a58ceb01367f22a8216a36a",
+    "source_content_md5": "AvKmA2jp+ik1NPXvFd/DHg==",
+    "download_url": "https://eepublicdownloads.blob.core.windows.net/public-cdn-container/clean-documents/Publications/Statistics/2025/monthly_hourly_load_values_2025.csv"
   }
 }

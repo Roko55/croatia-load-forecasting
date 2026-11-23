@@ -1,4 +1,6 @@
-# Refit the development benchmark
+# Reproduce the benchmark
+
+For a scoring-only check, run `python src/audit.py --period all` with Python 3.12 or later. This uses the archived forecasts. The commands below generate forecasts from the source inputs.
 
 Use a fresh Python 3.12 virtual environment. The full CPU setup includes the
 six classical workflows, four fitted neural networks and two pretrained
@@ -16,10 +18,17 @@ the frozen ERA5 extract. It checks both input SHA-256 digests for each
 development year. Use `--cache PATH` to reuse verified source files.
 Inputs and forecasts are written under the ignored `work/` directory.
 
-Run the full four-year reproduction with:
+Run all models for the four development years:
 
 ```sh
 python src/train.py --year 2019 2020 2021 2022 --verify
+```
+
+For the three retrospective years:
+
+```sh
+python src/training_inputs.py --year 2023 2024 2025
+python src/train.py --year 2023 2024 2025 --verify
 ```
 
 To run one model, take its ID from the [model table](../README.md#models-and-results).
@@ -46,9 +55,8 @@ and calendar baseline, and 0.05 MW for the pretrained workflows. These
 limits check numerical reproduction against the archive. The recorded full
 reproduction used the pinned CPU environment on Windows and verified all
 48 regenerated profiles. The largest hourly difference was 0.00159 MW.
-For a scoring-only check, run `python src/audit.py`.
 
-The preparation and generation commands accept 2019–2022 only. Each fold
+The preparation and generation commands accept 2019–2025. Input preparation defaults to 2019–2022. Each fold
 uses measured demand up to the preceding December 31 and supplies the target
 year's calendar and ERA5 temperatures to the forecaster. N-HiTS and TFT
 require at least one complete forecast window (168 and 336 hours,
@@ -58,6 +66,6 @@ respectively). The benchmark always supplies a full year.
 
 [GitHub Actions](https://github.com/Roko55/croatia-load-forecasting/actions)
 runs the workbook boundary, input schema, DST, scoring and TimesFM-3
-attention tests. The tests use fixtures and the packaged weather extract.
+attention tests. The tests use fixtures and the packaged weather extracts.
 They require neither ENTSO-E archives nor pretrained weights. For the
 full experiment, use the reproduction commands above.

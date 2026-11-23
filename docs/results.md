@@ -1,6 +1,6 @@
 # Development results
 
-The benchmark compares 12 full-year forecasts for 2019–2022. See [how the metrics are calculated](methodology.md#scoring), the [annual results](../results/by-year.csv) and the [four-year means](../results/summary.csv).
+These four annual forecasts per workflow were used for model development. See [how the metrics are calculated](methodology.md#scoring), the [annual results](../results/by-year.csv) and the [four-year means](../results/summary.csv). The [2023–2025 comparison](retrospective.md) reports the later years separately.
 
 ## Winners by year
 

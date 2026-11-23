@@ -12,6 +12,7 @@ from statistics import median
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
+PERIODS = ("development", "retrospective")
 METRICS = (
     "mae_mw", "rmse_mw", "mape_pct", "energy_bias_pct", "shape_mae_mw",
     "shape_peak_abs_error_mw", "shape_ramp_mae_mw", "top_5pct_overlap_pct",
@@ -85,7 +86,12 @@ def predictions(year, fold, methods):
     path = ROOT / "results" / "profiles" / f"{year}.csv.gz"
     require(digest(path) == fold["forecast_export_sha256"], f"{year}: forecast archive hash differs")
     tcn_columns = [f"tcn_seed{seed}" for seed in (42, 43, 44)]
-    columns = [key for key in methods if key != "tcn_median"] + tcn_columns
+    storage = fold.get("tcn_storage", "seed_profiles")
+    require(storage in ("seed_profiles", "point_profile"), f"{year}: unknown TCN archive format")
+    columns = list(methods)
+    if storage == "seed_profiles":
+        columns.remove("tcn_median")
+        columns.extend(tcn_columns)
     with gzip.open(path, "rt", encoding="ascii", newline="") as stream:
         rows = csv.DictReader(stream)
         require(rows.fieldnames == ["timestamp_utc", *columns], f"{year}: unexpected forecast schema")
@@ -93,7 +99,8 @@ def predictions(year, fold, methods):
     require([row["timestamp_utc"] for row in rows] == hours(year), f"{year}: forecast time grid differs")
     series = {name: [float(row[name]) for row in rows] for name in columns}
     require(all(positive(values) for values in series.values()), f"{year}: invalid forecast value")
-    series["tcn_median"] = [median(point) for point in zip(*(series.pop(name) for name in tcn_columns), strict=True)]
+    if storage == "seed_profiles":
+        series["tcn_median"] = [median(point) for point in zip(*(series.pop(name) for name in tcn_columns), strict=True)]
     return series
 
 
@@ -119,16 +126,20 @@ def score(actual, pred):
     }
 
 
-def run(cache):
+def run(cache, period="development"):
     lock = read_json(ROOT / "configs" / "protocol.json")
     methods = lock["models"]
-    with (ROOT / "results" / "by-year.csv").open(encoding="utf-8", newline="") as stream:
+    folds = lock[period]
+    directory = ROOT / "results"
+    if period == "retrospective":
+        directory /= "retrospective"
+    with (directory / "by-year.csv").open(encoding="utf-8", newline="") as stream:
         expected = {(int(row["year"]), row["model"]): row for row in csv.DictReader(stream)}
-    planned = {(int(year), method) for year in lock["development"] for method in methods}
-    require(len(methods) == 12 and len(planned) == 48 and set(expected) == planned, "Incomplete comparison table")
+    planned = {(int(year), method) for year in folds for method in methods}
+    require(len(methods) == 12 and set(expected) == planned, "Incomplete comparison table")
     hashes = read_json(ROOT / "data" / "entsoe-sources.json")
     results = {}
-    for key, fold in lock["development"].items():
+    for key, fold in folds.items():
         year = int(key)
         actual = observed(year, hashes[key], cache)
         require(len(actual) == fold["forecast_hours"], f"{year}: unexpected evaluation length")
@@ -142,14 +153,14 @@ def run(cache):
                         f"{year} {method} {metric}: {computed[metric]} != {row[metric]}")
             results[key][method] = computed
 
-    with (ROOT / "results" / "summary.csv").open(encoding="utf-8", newline="") as stream:
+    with (directory / "summary.csv").open(encoding="utf-8", newline="") as stream:
         summary = {row["model"]: row for row in csv.DictReader(stream)}
     require(set(summary) == set(methods), "Incomplete summary")
     for method in methods:
         for metric in METRICS:
             value = math.fsum(year[method][metric] for year in results.values()) / len(results)
             require(abs(value - float(summary[method][metric])) <= 1e-8,
-                    f"{method} {metric}: four-year mean differs")
+                    f"{method} {metric}: period mean differs")
     return results
 
 
@@ -157,14 +168,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cache", type=Path, default=ROOT / "data" / "cache")
     parser.add_argument("--output", type=Path, help="Write the recomputed per-year metrics as JSON")
+    parser.add_argument("--period", choices=(*PERIODS, "all"), default="development")
     args = parser.parse_args()
+    periods = PERIODS if args.period == "all" else (args.period,)
     try:
-        scores = run(args.cache)
+        scores = {year: items for period in periods for year, items in run(args.cache, period).items()}
     except (OSError, ValueError, KeyError) as error:
         parser.exit(1, f"Audit failed: {error}\n")
     if args.output:
         args.output.write_text(json.dumps(scores, indent=2, allow_nan=False) + "\n", encoding="utf-8")
-    print("PASS: 48 hourly profiles, 384 per-year metric checks and 96 four-year mean checks.")
+    count = sum(len(items) for items in scores.values())
+    print(f"PASS: {count} hourly profiles, {count * len(METRICS)} per-year metric checks and "
+          f"{len(periods) * 12 * len(METRICS)} period mean checks.")
 
 
 if __name__ == "__main__":

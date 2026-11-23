@@ -1,5 +1,6 @@
 """Render weekly profiles and the hourly example from the frozen scoring inputs."""
 import argparse
+import csv
 from datetime import datetime, timedelta
 from math import ceil, floor, fsum
 from pathlib import Path
@@ -104,19 +105,63 @@ def plot_peak_week(year, actual, curves):
     plt.close(fig)
 
 
+def plot_retrospective_errors(years):
+    directory = ROOT / "results" / "retrospective"
+    with (directory / "by-year.csv").open(newline="", encoding="utf-8") as stream:
+        annual = list(csv.DictReader(stream))
+    with (directory / "summary.csv").open(newline="", encoding="utf-8") as stream:
+        summary = list(csv.DictReader(stream))
+
+    labels = [row["label"] for row in summary]
+    lookup = {(row["year"], row["model"]): row for row in annual}
+    all_values = [float(row[k]) for row in annual for k in ("mae_mw", "shape_mae_mw")]
+    min_error, max_error = min(all_values), max(all_values)
+    fig, panels = plt.subplots(1, 2, figsize=(10, 6), sharey=True)
+    fig.subplots_adjust(left=.18, right=.875, bottom=.12, top=.81, wspace=.15)
+    fig.text(.18, .95, "Croatian electricity demand forecast errors", fontsize=17, weight="semibold")
+    fig.text(.18, .905, "Retrospective evaluation with observed weather · 2023–2025",
+             fontsize=11, color="#475569")
+    for axis, metric, title in zip(panels, ("mae_mw", "shape_mae_mw"),
+                                   ("Raw hourly MAE", "Equal-energy shape MAE"), strict=True):
+        cells = [[float(lookup[year, row["model"]][metric]) for year in years]
+                          + [float(row[metric])] for row in summary]
+        image = axis.imshow(cells, cmap="YlGnBu", vmin=min_error, vmax=max_error, aspect="auto")
+        axis.set_title(title, fontsize=11, loc="left", pad=10)
+        axis.set_xticks(range(len(years) + 1), [*years, "Mean"])
+        axis.set_yticks(range(len(labels)), labels)
+        axis.tick_params(length=0)
+        for row in range(len(labels)):
+            for column in range(len(years) + 1):
+                value = cells[row][column]
+                marker = "bold" if value == min(series[column] for series in cells) else "normal"
+                axis.text(column, row, f"{value:.1f}", ha="center", va="center", weight=marker,
+                          color="white" if image.norm(value) > .6 else "#172131", fontsize=8)
+    fig.colorbar(image, cax=fig.add_axes([.90, .12, .014, .69]), label="Error (MW)")
+    fig.text(.18, .045, "Bold marks the lowest value in each column. The mean gives each year equal weight.",
+             fontsize=8, color="#475569")
+    fig.savefig(directory / "comparison.png", dpi=160, facecolor="white")
+    plt.close(fig)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cache", type=Path, default=ROOT / "data" / "cache")
+    parser.add_argument("--period", choices=("development", "retrospective", "all"),
+                        default="all")
     args = parser.parse_args()
     lock = read_json(ROOT / "configs" / "protocol.json")
     sources = read_json(ROOT / "data" / "entsoe-sources.json")
-    for key, fold in lock["development"].items():
-        year = int(key)
-        actual = observed(year, sources[key], args.cache)
-        curves = predictions(year, fold, lock["models"])
-        plot(year, actual, curves, lock["models"])
-        if year == 2022:
-            plot_peak_week(year, actual, curves)
+    periods = ("development", "retrospective") if args.period == "all" else (args.period,)
+    for period in periods:
+        for key, fold in lock[period].items():
+            year = int(key)
+            actual = observed(year, sources[key], args.cache)
+            curves = predictions(year, fold, lock["models"])
+            plot(year, actual, curves, lock["models"])
+            if year == 2022:
+                plot_peak_week(year, actual, curves)
+    if "retrospective" in periods:
+        plot_retrospective_errors(tuple(lock["retrospective"]))
 
 
 if __name__ == "__main__":
