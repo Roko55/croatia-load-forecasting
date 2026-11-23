@@ -164,12 +164,51 @@ def run(cache, period="development"):
     return results
 
 
+def check_reproduction_report():
+    """Check coverage, tolerances and file identity for the recorded forecast replays."""
+    provenance = read_json(ROOT / "results" / "provenance.json")["forecast_reproduction"]
+    report = ROOT / "results" / "reproduction-by-year.csv"
+    require(digest(report) == provenance["report_sha256"], "Unexpected forecast reproduction report")
+    protocol = read_json(ROOT / "configs" / "protocol.json")
+    folds = {year: (period, fold) for period in PERIODS for year, fold in protocol[period].items()}
+    expected = {(year, model) for year in folds for model in protocol["models"]}
+    seen = set()
+    largest = 0.0
+    hours_checked = 0
+    with report.open(encoding="utf-8", newline="") as stream:
+        for row in csv.DictReader(stream):
+            year, model = key = row["year"], row["model"]
+            require(key in expected and key not in seen, f"Unexpected reproduction row: {key}")
+            period, fold = folds[year]
+            require(row["period"] == period and int(row["hours"]) == fold["forecast_hours"],
+                    f"Incorrect replay period or length: {key}")
+            kind = protocol["models"][model]["type"]
+            limit = .05 if kind == "external pretrained" else .005
+            error = float(row["max_abs_difference_mw"])
+            require(float(row["tolerance_mw"]) == limit and 0 <= error <= limit,
+                    f"Replay exceeds or misstates its numerical tolerance: {key}")
+            require(row["runtime"] in provenance["runtimes"], f"Unknown replay runtime: {key}")
+            largest = max(largest, error)
+            hours_checked += fold["forecast_hours"]
+            seen.add(key)
+    require(seen == expected and len(seen) == provenance["profiles"],
+            "Incomplete forecast reproduction coverage")
+    require(largest == provenance["max_abs_difference_mw"], "Incorrect maximum replay difference")
+    require(hours_checked == provenance["hourly_values"], "Incorrect total replay coverage")
+    print(f"PASS: {len(seen)} recorded forecast replays, maximum difference {largest:g} MW.")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cache", type=Path, default=ROOT / "data" / "cache")
     parser.add_argument("--output", type=Path, help="Write the recomputed per-year metrics as JSON")
     parser.add_argument("--period", choices=(*PERIODS, "all"), default="development")
+    parser.add_argument("--check-reproduction", action="store_true",
+                        help="Check the saved forecast reproduction report without running models")
     args = parser.parse_args()
+    if args.check_reproduction:
+        check_reproduction_report()
+        return
     periods = PERIODS if args.period == "all" else (args.period,)
     try:
         scores = {year: items for period in periods for year, items in run(args.cache, period).items()}

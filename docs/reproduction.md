@@ -77,9 +77,13 @@ Add `--verify` to compare every generated hour with its archived point forecast.
 The maximum allowed difference is 0.005 MW for locally fitted workflows
 and the calendar baseline, and 0.05 MW for pretrained workflows. CPU and
 numerical library differences can change fitted weights and predictions.
-Run the scoring audit to verify the published metrics directly from the
-pinned archives. See [archive provenance](../results/provenance.json) for
-the protocol and checkpoint manifest checksums.
+The [forecast reproduction report](../results/reproduction-by-year.csv)
+records the hours checked, maximum difference and tolerance for each
+model and year. Run `python src/audit.py --check-reproduction` to check its
+coverage and tolerances. Run `python src/audit.py --period all` to
+recalculate published metrics directly from the pinned archives. See
+[provenance](../results/provenance.json) for the generation code revision,
+runtime, and manifest checksums.
 
 The preparation and generation commands accept 2019–2025. Input preparation defaults to 2019–2022. Each fold
 uses measured demand up to the preceding December 31 and supplies the target
@@ -91,5 +95,7 @@ respectively). The benchmark always supplies a full year.
 
 [GitHub Actions](https://github.com/Roko55/croatia-load-forecasting/actions)
 runs the workbook boundary, input schema, DST, scoring and prior-year
-load feature tests with fixtures and packaged weather. Use the reproduction
-commands above for the full model runs and hour-by-hour comparisons.
+load feature tests with fixtures and packaged weather. It checks the
+configuration selection and the recorded forecast reproduction report.
+Use the reproduction commands above to refit the models and compare
+the generated forecasts hour by hour.

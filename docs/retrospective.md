@@ -37,4 +37,4 @@ Weekly means show the annual curves against observed demand for every workflow. 
 | 2024 | [All 12 curves](../results/figures/profiles-2024.png) | [CSV.gz](../results/profiles/2024.csv.gz) |
 | 2025 | [All 12 curves](../results/figures/profiles-2025.png) | [CSV.gz](../results/profiles/2025.csv.gz) |
 
-[All metrics by year](../results/retrospective/by-year.csv) · [Period means](../results/retrospective/summary.csv) · [Archive provenance](../results/provenance.json) · [Reproduction commands](reproduction.md)
+[All metrics by year](../results/retrospective/by-year.csv) · [Period means](../results/retrospective/summary.csv) · [Forecast reproduction report](../results/reproduction-by-year.csv) · [Reproduction commands](reproduction.md)

@@ -37,7 +37,7 @@ Model names link to their Python implementations. Use the ID with `src/train.py 
 |---|---|---|
 | Prepare inputs | [`src/training_inputs.py`](src/training_inputs.py) · [data sources](data/README.md) | Combines historical load, local calendar and ERA5. Writes a training file and a separate weather/calendar file per year. |
 | Generate forecasts | [`src/train.py`](src/train.py) · [model files](src/models/) | Loads the two input files, runs the selected model and writes its hourly MW forecast. |
-| Check results | [`src/audit.py`](src/audit.py) · [`results/`](results/) | Scores the archived forecasts against observed load and checks the published metrics. |
+| Check results | [Scoring audit](src/audit.py) · [Forecast reproduction](results/reproduction-by-year.csv) · [Configuration selection](docs/calibration.md) | Recalculates archived scores and documents how the forecasts and selections were verified. |
 | Find settings | [Recorded model settings](configs/model-settings.json) · [evaluation protocol](configs/protocol.json) · [pretrained checkpoints](configs/checkpoints.json) | Model parameters are defined in the Python implementations. The settings JSON records them for reference. The runner reads the protocol and checkpoint manifest. |
 
 ## Reproduce the scores

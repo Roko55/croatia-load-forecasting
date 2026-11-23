@@ -1,5 +1,5 @@
 {
-  "scope": "Archived hourly profiles and scoring inputs",
+  "scope": "Forecast archives, score verification, and configuration selection",
   "selection_years": [
     2019,
     2020,
@@ -32,9 +32,47 @@
     "2024": 8784,
     "2025": 8760
   },
-  "verified": {
-    "annual_profiles": 84,
-    "metrics_per_profile": 8,
+  "scoring_audit": {
+    "archived_profiles": 84,
+    "per_year_metric_checks": 672,
+    "period_mean_checks": 192,
     "observation_source": "ENTSO-E Power Statistics"
+  },
+  "calibration_evidence": {
+    "development_model_year_scores": 388,
+    "archived_reference_scores": 48,
+    "additional_seed_scores": 168,
+    "sha256": {
+      "candidates.json": "c1ad9f5466afc26bf8628d2988f83d918c60dc6d50da7b7892bcbad59c088ead",
+      "development-scores.csv": "c80069a2a6a8d6dfa7dcfaedc0e52c2b4b3ada17ec2f6182a39262d686f8e882",
+      "seed-sensitivity.csv": "a1f2ba4dc1622115ca191e435ab91eb2e2435a31dae267047d25f802f4a1a4c3"
+    }
+  },
+  "forecast_reproduction": {
+    "generation_code_commit": "36fe566c2a210bf48e6674c15ea2b5fe5d39c0a7",
+    "verification_command": "python src/train.py --year YEAR --model MODEL --verify",
+    "profiles": 84,
+    "hourly_values": 736416,
+    "max_abs_difference_mw": 0.000553337265,
+    "report_sha256": "c87f14512bf4072b9dcd41be5d336939fa703f5dcf8d44d8d9a375c331107316",
+    "runtimes": {
+      "windows_cpu": {
+        "python": "3.12.14",
+        "operating_system": "Windows",
+        "architecture": "AMD64",
+        "packages": {
+          "numpy": "1.26.4",
+          "pandas": "2.2.3",
+          "pyarrow": "21.0.0",
+          "scipy": "1.13.1",
+          "scikit-learn": "1.7.2",
+          "lightgbm": "4.6.0",
+          "torch": "2.9.1+cpu",
+          "neuralforecast": "3.1.2",
+          "chronos-forecasting": "2.3.2",
+          "timesfm": "3.0.2"
+        }
+      }
+    }
   }
 }

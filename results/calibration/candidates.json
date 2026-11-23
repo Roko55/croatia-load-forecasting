@@ -1,0 +1,515 @@
+{
+  "reference_commit": "c18d5e508af19479f25b8e776842fe18f85b9b0e",
+  "development_years": [
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "models": {
+    "calendar_recent": {
+      "selected_configuration": "reference",
+      "benchmark_recipe": "recent",
+      "matched_reference_rerun": false,
+      "three_seed_check": false,
+      "configurations": {
+        "reference": {},
+        "half_life_1": {
+          "half_life": 1
+        },
+        "half_life_2": {
+          "half_life": 2
+        },
+        "half_life_8": {
+          "half_life": 8
+        },
+        "weekday_weekend": {
+          "half_life": 4,
+          "grouping": "weekday_weekend"
+        },
+        "quarter_day": {
+          "half_life": 4,
+          "grouping": "quarter_day"
+        }
+      }
+    },
+    "chronos2": {
+      "selected_configuration": "damped_level",
+      "benchmark_recipe": "historical_level_calibration",
+      "matched_reference_rerun": false,
+      "three_seed_check": false,
+      "configurations": {
+        "reference": {},
+        "context2048": {
+          "context": 2048
+        },
+        "context4096": {
+          "context": 4096
+        },
+        "quantile_continuation": {
+          "context": 8192,
+          "feedback": [
+            0.25,
+            0.5,
+            0.75
+          ]
+        },
+        "damped_level": {
+          "context": 8192,
+          "past_level_mix": 0.5
+        },
+        "windows512": {
+          "context": 8192,
+          "window": 512
+        }
+      }
+    },
+    "ffn": {
+      "selected_configuration": "reference",
+      "benchmark_recipe": "epochs20",
+      "matched_reference_rerun": false,
+      "three_seed_check": true,
+      "configurations": {
+        "reference": {},
+        "epochs30": {
+          "epochs": 30
+        },
+        "epochs40": {
+          "epochs": 40
+        },
+        "epochs60": {
+          "epochs": 60
+        },
+        "wide64": {
+          "layers": [
+            64,
+            32
+          ]
+        },
+        "wide96": {
+          "layers": [
+            96,
+            48
+          ]
+        },
+        "alpha001": {
+          "alpha": 0.001
+        },
+        "alpha01": {
+          "alpha": 0.01
+        },
+        "origin_load": {
+          "load_context": true
+        },
+        "inner_stop": {
+          "early_stop": true
+        }
+      }
+    },
+    "gam_thermal": {
+      "selected_configuration": "linear_trend",
+      "benchmark_recipe": "weekday_weekend_with_linear_trend",
+      "matched_reference_rerun": false,
+      "three_seed_check": false,
+      "configurations": {
+        "reference": {},
+        "smooth_1": {
+          "smoothing": 1
+        },
+        "smooth_30": {
+          "smoothing": 30
+        },
+        "smooth_100": {
+          "smoothing": 100
+        },
+        "seasonal_temperature": {
+          "seasonal_temperature": true
+        },
+        "linear_trend": {
+          "trend": true
+        },
+        "season_temperature_trend": {
+          "seasonal_temperature": true,
+          "trend": true
+        }
+      }
+    },
+    "lightgbm_thermal": {
+      "selected_configuration": "thermal72",
+      "benchmark_recipe": "trees320_thermal24_72",
+      "matched_reference_rerun": false,
+      "three_seed_check": true,
+      "configurations": {
+        "reference": {},
+        "compact_leaves": {
+          "num_leaves": 15,
+          "min_child_samples": 40
+        },
+        "wide_leaves": {
+          "num_leaves": 63
+        },
+        "leaf_regularization": {
+          "min_child_samples": 80
+        },
+        "lower_learning_rate": {
+          "learning_rate": 0.025,
+          "n_estimators": 640
+        },
+        "longer_fit": {
+          "n_estimators": 640
+        },
+        "trees_160": {
+          "n_estimators": 160
+        },
+        "thermal72": {
+          "thermal72": true
+        },
+        "calendar_trend": {
+          "trend": true
+        }
+      }
+    },
+    "lstm": {
+      "selected_configuration": "epochs18",
+      "benchmark_recipe": "epochs18",
+      "matched_reference_rerun": true,
+      "three_seed_check": true,
+      "configurations": {
+        "reference": {},
+        "epochs18": {
+          "epochs": 18
+        },
+        "epochs24": {
+          "epochs": 24
+        },
+        "epochs36": {
+          "epochs": 36
+        },
+        "hidden32": {
+          "hidden": 32
+        },
+        "hidden48": {
+          "hidden": 48
+        },
+        "context72": {
+          "context": 72
+        },
+        "context168": {
+          "context": 168
+        },
+        "origin_load": {
+          "load_context": true
+        },
+        "origin_load_epochs24": {
+          "load_context": true,
+          "epochs": 24
+        }
+      }
+    },
+    "nhits": {
+      "selected_configuration": "center168_width128_steps520",
+      "benchmark_recipe": "weekly_centered",
+      "matched_reference_rerun": true,
+      "three_seed_check": true,
+      "configurations": {
+        "reference": {
+          "horizon": 168,
+          "steps": 260,
+          "width": 64,
+          "feedback": false,
+          "centered": true
+        },
+        "blocks168": {
+          "horizon": 168,
+          "steps": 260,
+          "width": 64,
+          "feedback": false,
+          "centered": false
+        },
+        "feedback168": {
+          "horizon": 168,
+          "steps": 260,
+          "width": 64,
+          "feedback": true,
+          "centered": false
+        },
+        "center168_steps520": {
+          "horizon": 168,
+          "steps": 520,
+          "width": 64,
+          "feedback": false,
+          "centered": true
+        },
+        "center168_steps1040": {
+          "horizon": 168,
+          "steps": 1040,
+          "width": 64,
+          "feedback": false,
+          "centered": true
+        },
+        "center168_width128": {
+          "horizon": 168,
+          "steps": 260,
+          "width": 128,
+          "feedback": false,
+          "centered": true
+        },
+        "center168_width128_steps520": {
+          "horizon": 168,
+          "steps": 520,
+          "width": 128,
+          "feedback": false,
+          "centered": true
+        },
+        "blocks168_steps520": {
+          "horizon": 168,
+          "steps": 520,
+          "width": 64,
+          "feedback": false,
+          "centered": false
+        },
+        "feedback168_steps520": {
+          "horizon": 168,
+          "steps": 520,
+          "width": 64,
+          "feedback": true,
+          "centered": false
+        },
+        "blocks336": {
+          "horizon": 336,
+          "steps": 260,
+          "width": 64,
+          "feedback": false,
+          "centered": false
+        }
+      }
+    },
+    "random_forest": {
+      "selected_configuration": "thermal72",
+      "benchmark_recipe": "trees200_thermal24_72",
+      "matched_reference_rerun": false,
+      "three_seed_check": true,
+      "configurations": {
+        "reference": {},
+        "fewer_trees": {
+          "n_estimators": 100
+        },
+        "more_trees": {
+          "n_estimators": 320
+        },
+        "smooth_shallow": {
+          "max_depth": 10,
+          "min_samples_leaf": 48
+        },
+        "deep_local": {
+          "max_depth": 18,
+          "min_samples_leaf": 12
+        },
+        "all_features": {
+          "max_features": 1.0
+        },
+        "fewer_features": {
+          "max_features": 0.55
+        },
+        "thermal72": {
+          "thermal72": true
+        }
+      }
+    },
+    "sarimax": {
+      "selected_configuration": "reference",
+      "benchmark_recipe": "weekend_hour",
+      "matched_reference_rerun": false,
+      "three_seed_check": false,
+      "configurations": {
+        "reference": {},
+        "daily_weekly_ar": {
+          "ar_lags": [
+            1,
+            24,
+            168
+          ]
+        },
+        "daily_ar_ma1": {
+          "ar_lags": [
+            1,
+            24
+          ],
+          "ma": true
+        },
+        "weekly_ar": {
+          "ar_lags": [
+            1,
+            168
+          ]
+        },
+        "daily_thermal24": {
+          "ar_lags": [
+            1,
+            24
+          ],
+          "thermal24": true
+        }
+      }
+    },
+    "tcn_median": {
+      "selected_configuration": "origin_load_epochs28",
+      "benchmark_recipe": "prior_year_load",
+      "matched_reference_rerun": true,
+      "three_seed_check": false,
+      "configurations": {
+        "reference": {},
+        "epochs21": {
+          "epochs": 21
+        },
+        "epochs28": {
+          "epochs": 28
+        },
+        "epochs42": {
+          "epochs": 42
+        },
+        "channels16": {
+          "channels": 16
+        },
+        "channels24": {
+          "channels": 24
+        },
+        "context13": {
+          "dilations": [
+            1,
+            2,
+            3
+          ]
+        },
+        "context49": {
+          "dilations": [
+            1,
+            3,
+            20
+          ]
+        },
+        "origin_load": {
+          "load_context": true
+        },
+        "origin_load_epochs28": {
+          "load_context": true,
+          "epochs": 28
+        }
+      }
+    },
+    "tft": {
+      "selected_configuration": "blocks336_steps880",
+      "benchmark_recipe": "fortnightly_blocks",
+      "matched_reference_rerun": true,
+      "three_seed_check": true,
+      "configurations": {
+        "reference": {
+          "horizon": 336,
+          "steps": 220,
+          "width": 16,
+          "feedback": false,
+          "centered": false
+        },
+        "feedback336": {
+          "horizon": 336,
+          "steps": 220,
+          "width": 16,
+          "feedback": true,
+          "centered": false
+        },
+        "blocks336_steps440": {
+          "horizon": 336,
+          "steps": 440,
+          "width": 16,
+          "feedback": false,
+          "centered": false
+        },
+        "blocks336_steps880": {
+          "horizon": 336,
+          "steps": 880,
+          "width": 16,
+          "feedback": false,
+          "centered": false
+        },
+        "blocks336_width32": {
+          "horizon": 336,
+          "steps": 220,
+          "width": 32,
+          "feedback": false,
+          "centered": false
+        },
+        "blocks336_width32_steps440": {
+          "horizon": 336,
+          "steps": 440,
+          "width": 32,
+          "feedback": false,
+          "centered": false
+        },
+        "feedback336_steps440": {
+          "horizon": 336,
+          "steps": 440,
+          "width": 16,
+          "feedback": true,
+          "centered": false
+        },
+        "blocks168": {
+          "horizon": 168,
+          "steps": 220,
+          "width": 16,
+          "feedback": false,
+          "centered": false
+        },
+        "feedback168": {
+          "horizon": 168,
+          "steps": 220,
+          "width": 16,
+          "feedback": true,
+          "centered": false
+        },
+        "blocks168_steps440": {
+          "horizon": 168,
+          "steps": 440,
+          "width": 16,
+          "feedback": false,
+          "centered": false
+        }
+      }
+    },
+    "timesfm3": {
+      "selected_configuration": "context12288",
+      "benchmark_recipe": "context12288",
+      "matched_reference_rerun": true,
+      "three_seed_check": false,
+      "configurations": {
+        "reference": {},
+        "context4096": {
+          "context": 4096
+        },
+        "context8192": {
+          "context": 8192
+        },
+        "context12288": {
+          "context": 12288
+        },
+        "temperature_only": {
+          "context": 16384,
+          "features": [
+            "temperature_zagreb_c",
+            "temperature_split_c",
+            "temperature_rijeka_c",
+            "temperature_osijek_c"
+          ]
+        },
+        "calendar_only": {
+          "context": 16384,
+          "features": [
+            "hour_sin",
+            "hour_cos",
+            "weekend",
+            "is_holiday"
+          ]
+        }
+      }
+    }
+  }
+}
