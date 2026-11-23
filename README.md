@@ -6,6 +6,10 @@ Two profiles with the same annual energy can have different peaks and ramps. Tho
 
 [Run the benchmark](docs/reproduction.md) · [Read the methodology](docs/methodology.md) · [Results by year](docs/retrospective.md) · [Download hourly profiles](results/profiles/)
 
+## Electricity demand for capacity planning
+
+The [planning scenarios](docs/planning.md) combine the 12 forecast-based shapes with common road charging, heating, hot water and cooling profiles for 2030–2050. [Download the hourly tables](results/planning/) or reproduce them with `python src/planning.py`.
+
 ## Models and results
 
 The comparison includes a historical calendar baseline, statistical models, tree-based models and neural networks fitted to Croatian data. Chronos-2 and TimesFM-3 use externally pretrained weights.

@@ -1,0 +1,115 @@
+{
+  "necp": {
+    "url": "https://commission.europa.eu/document/download/3dabd910-2681-4b95-9657-e17309c795fd_en?filename=Croatia+-+Final+Updated+NECP+(Energy+balances)+2021+-+2030.pdf",
+    "sha256": "e6f0688cb0a9e6f38a46592bc48aac8996fc11f514097625b6e7cd7df0c98ab1",
+    "column": "Electricity, PJ",
+    "pages": {
+      "2030": [
+        15,
+        16,
+        27,
+        28
+      ],
+      "2040": [
+        29,
+        30,
+        39,
+        40
+      ],
+      "2050": [
+        41,
+        42,
+        53,
+        54
+      ]
+    },
+    "rows": [
+      "DELIVERED TO CONSUMERS",
+      "LOSSES",
+      "Road"
+    ]
+  },
+  "tyndp_annual": {
+    "url": "https://2026-data.entsos-tyndp-scenarios.eu/main-documents/TYNDP2026_ETM_DASHBOARD.xlsx",
+    "sha256": "ddc07d38c1f47ad4a23669c8830367b98706c7b839ae94e1260b528f8ea7f12b",
+    "sheet": "data",
+    "filters": [
+      "HR",
+      "NT",
+      "Sub_sector",
+      "Electricity",
+      "FEC"
+    ],
+    "source_unit": "TWh"
+  },
+  "passenger_road": {
+    "url": "https://2026-data.entsos-tyndp-scenarios.eu/input/model-input/national-trends/Demand.zip",
+    "license": "CC BY 4.0, TYNDP 2026 Scenarios",
+    "workbook_sha256": {
+      "MARKET": "444462381555c6f69f566281f1dee7b5aa25cac1e6ce16121b80012c7aa27c9a",
+      "PROSUMER": "694d98a2c5f5216bf3588ab10a22f52281d8ec94e5cce8fe50f6d977e9ff0f83"
+    },
+    "sheet": "HR00",
+    "column": "WS003",
+    "fixed_market_and_prosumer_gwh": 98.02689181138656
+  },
+  "commercial_road": {
+    "url": "https://raw.githubusercontent.com/NatLabRockies/hdev-depot-charging-2021/61530df51f6cd7d64f014ebbf8714cef24c8ca70/data/fleet-schedules/fleet2-warehouse-delivery/veh_schedules.csv",
+    "catalogue": "https://data.nlr.gov/submissions/162",
+    "sha256": "5fdecb232de748e6eca2b00a897f55cb55912fb14136e99e616fc4d935421842"
+  },
+  "hot_water": {
+    "url": "https://data.open-power-system-data.org/when2heat/2023-07-27/when2heat.csv",
+    "citation": "https://doi.org/10.25832/when2heat/2023-07-27",
+    "license": "CC BY 4.0, Open Power System Data",
+    "selected_rows_sha256": "e0e002cb226ef002880bb53c8d13cdd0cadf1a5f5a0127d3a2aae88614a3f1c3",
+    "house_population_share": 0.77,
+    "house_population_source": "https://ec.europa.eu/eurostat/web/interactive%20publications/housing%202023"
+  },
+  "weather": {
+    "url": "https://doi.org/10.24381/cds.adbb2d47",
+    "benchmark_manifest": "../training-sources.json",
+    "population_country_and_counties": "https://podaci.dzs.hr/2024/en/76805"
+  },
+  "reference_road": {
+    "url": "https://ec.europa.eu/eurostat/databrowser/view/nrg_bal_c/default/table",
+    "filters": [
+      "HR",
+      "2023",
+      "E7000",
+      "GWH",
+      "FC_TRA_ROAD_E"
+    ],
+    "snapshot_sha256": "3a0718e2165301116f6375d7d20d17dc0f4a2f0aacfe552565ca8402e479f525"
+  },
+  "reference_households": {
+    "url": "https://ec.europa.eu/eurostat/databrowser/view/nrg_d_hhq/default/table",
+    "filters": [
+      "HR",
+      "2023",
+      "E7000",
+      "TJ",
+      "FC_OTH_HH_E_SH",
+      "FC_OTH_HH_E_WH",
+      "FC_OTH_HH_E_SC"
+    ],
+    "snapshot_sha256": "d0d874c65a601be00bfc67d60ac65c6b19947ab9a55cc8f9d52e04b7d11d4375"
+  },
+  "reference_services": {
+    "url": "https://data.jrc.ec.europa.eu/collection/id-0110",
+    "license": "CC BY 4.0, European Commission Joint Research Centre",
+    "workbook": "JRC-IDEES-2023_Tertiary_HR.xlsx",
+    "sheet": "SER_hh_fec",
+    "cells": {
+      "space_heat": [
+        "Y13",
+        "Y14"
+      ],
+      "cooling": [
+        "Y18"
+      ]
+    },
+    "source_unit": "ktoe",
+    "gwh_per_ktoe": 11.63
+  }
+}

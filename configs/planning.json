@@ -1,0 +1,75 @@
+{
+  "necp_pj": {
+    "2030": {
+      "final_electricity": 66.32,
+      "network_losses": 7.62,
+      "road": 2.2
+    },
+    "2040": {
+      "final_electricity": 76.67,
+      "network_losses": 8.95,
+      "road": 10.16
+    },
+    "2050": {
+      "final_electricity": 84.65,
+      "network_losses": 10.09,
+      "road": 17.46
+    }
+  },
+  "reference_gwh": {
+    "road": 18.5,
+    "household_space_heat": 340.43,
+    "service_space_heat": 1816.5569689589302,
+    "household_hot_water": 1236.39,
+    "household_cooling": 534.75,
+    "service_cooling": 174.36594692960998
+  },
+  "region_weights": {
+    "zagreb": 0.49326991884832083,
+    "osijek": 0.16829996015219892,
+    "rijeka": 0.131317418049033,
+    "split": 0.20711270295044726
+  },
+  "heating_threshold_c": 18,
+  "cooling_threshold_c": 22,
+  "cooling_temperature_window_hours": 6,
+  "local_hour_weights_sha256": "507a684200d659cd7c7a952e4622c670d0e62493e24696414dd72c111311a90d",
+  "tyndp_gwh": {
+    "2030": {
+      "passenger_road": 196.053784,
+      "commercial_road": 4.40468,
+      "household_space_heat": 1067.804029,
+      "service_space_heat": 1530.772357,
+      "household_cooling": 502.19043500000004,
+      "service_cooling": 651.5414440000001,
+      "household_hot_water_sensitivity": 298.03712
+    },
+    "2035": {
+      "passenger_road": 537.938399,
+      "commercial_road": 99.69061599999999,
+      "household_space_heat": 1444.205626,
+      "service_space_heat": 1386.94839,
+      "household_cooling": 510.14567700000003,
+      "service_cooling": 643.884075,
+      "household_hot_water_sensitivity": 355.349518
+    },
+    "2040": {
+      "passenger_road": 870.797831,
+      "commercial_road": 194.458505,
+      "household_space_heat": 1656.628471,
+      "service_space_heat": 1243.124423,
+      "household_cooling": 518.102626,
+      "service_cooling": 636.2267059999999,
+      "household_hot_water_sensitivity": 408.854095
+    },
+    "2050": {
+      "passenger_road": 5284.50504,
+      "commercial_road": 1070.094979,
+      "household_space_heat": 1678.7515740000001,
+      "service_space_heat": 917.538441,
+      "household_cooling": 533.218997,
+      "service_cooling": 610.01397,
+      "household_hot_water_sensitivity": 466.30791
+    }
+  }
+}

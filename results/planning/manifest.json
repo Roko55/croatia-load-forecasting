@@ -1,0 +1,160 @@
+{
+  "reference_year": 2023,
+  "reference_hours": 8760,
+  "clock": "Reference year UTC, one-hour intervals",
+  "forecasts_sha256": "45ce29ee3dc28d8ebb10481eb5e196614e422f121ea6584537b8b48410124550",
+  "configuration_sha256": "598db5630f95e41d787b36c750fbb62a36905eccb8dd3222318138cd861ad63e",
+  "local_hour_weights_sha256": "507a684200d659cd7c7a952e4622c670d0e62493e24696414dd72c111311a90d",
+  "reference_sha256": "3c37b329f545def3db0c8caa11a59d5dcd5edf018ccccfa9ada707d3cd34e762",
+  "deducted_mwh": {
+    "road_charging": 18500.0,
+    "heating_and_hot_water": 3393376.96895893,
+    "cooling": 709115.94692961
+  },
+  "minimum_reference_residual_mw": {
+    "calendar_recent": 430.8167251333117,
+    "sarimax": 568.8005390854278,
+    "gam_thermal": 477.674447950291,
+    "lightgbm_thermal": 512.7551260711389,
+    "random_forest": 536.5744855857193,
+    "ffn": 505.57891137564036,
+    "tcn_median": 506.23914678210224,
+    "lstm": 503.72696326762355,
+    "nhits": 458.7948531830093,
+    "tft": 458.93318078916946,
+    "chronos2": 243.1830622194052,
+    "timesfm3": 495.9645219399325
+  },
+  "years": {
+    "2030": {
+      "sha256": "acef5decec031b5df2604aa1da99b79329a7babf0cbcfde8f629c627b661e73f",
+      "annual_mwh": {
+        "baseline": 14939079.512777776,
+        "passenger_road": 597683.147855397,
+        "commercial_road": 13427.96325571416,
+        "space_heat": 2598576.386,
+        "hot_water": 1236390.0,
+        "cooling": 1153731.8790000002,
+        "total": 20538888.888888888
+      },
+      "baseline_factors": {
+        "calendar_recent": 1.1004143196975558,
+        "sarimax": 1.122046173864491,
+        "gam_thermal": 1.08722711141418,
+        "lightgbm_thermal": 1.121415168351434,
+        "random_forest": 1.1180316370049235,
+        "ffn": 1.1220022952547546,
+        "tcn_median": 1.0969732821097633,
+        "lstm": 1.1314849923881491,
+        "nhits": 1.0936923538593355,
+        "tft": 1.1276361016137835,
+        "chronos2": 1.185454798106761,
+        "timesfm3": 1.1041803902140002
+      }
+    },
+    "2035": {
+      "sha256": "2a1f7b5ee61612a0075b95a2a3ba7cdd6bbfdaf9f56d3704ef744078684d0f81",
+      "annual_mwh": {
+        "baseline": 15222870.676444441,
+        "passenger_road": 1448273.0499385027,
+        "commercial_road": 268393.6167281638,
+        "space_heat": 2831154.016,
+        "hot_water": 1236390.0,
+        "cooling": 1154029.752,
+        "total": 22161111.11111111
+      },
+      "baseline_factors": {
+        "calendar_recent": 1.1213184095402615,
+        "sarimax": 1.1433611945855717,
+        "gam_thermal": 1.1078806896252251,
+        "lightgbm_thermal": 1.1427182021365943,
+        "random_forest": 1.1392703953240282,
+        "ffn": 1.1433164824330657,
+        "tcn_median": 1.1178120040654835,
+        "lstm": 1.152979318219038,
+        "nhits": 1.1144687494551686,
+        "tft": 1.149057311748973,
+        "chronos2": 1.2079743647468073,
+        "timesfm3": 1.125156022452166
+      }
+    },
+    "2040": {
+      "sha256": "1ba7603bc60f107334f3defcc14b85f8fea2615e59ad1417e3a4f43843c89d3b",
+      "annual_mwh": {
+        "baseline": 15670638.88511111,
+        "passenger_road": 2307036.2565870825,
+        "commercial_road": 515185.9656351395,
+        "space_heat": 2899752.8940000003,
+        "hot_water": 1236390.0,
+        "cooling": 1154329.3319999997,
+        "total": 23783333.333333332
+      },
+      "baseline_factors": {
+        "calendar_recent": 1.1543010674276288,
+        "sarimax": 1.1769922228482477,
+        "gam_thermal": 1.140468088043941,
+        "lightgbm_thermal": 1.1763303173057293,
+        "random_forest": 1.1727810960941905,
+        "ffn": 1.176946195524585,
+        "tcn_median": 1.1506915239224706,
+        "lstm": 1.186893255670239,
+        "nhits": 1.147249930230139,
+        "tft": 1.1828558866086625,
+        "chronos2": 1.2435059362167602,
+        "timesfm3": 1.1582515605640087
+      }
+    },
+    "2045": {
+      "sha256": "3764e12a8df3afe95c5304a4f7d508f53c96c51873dca9a6b788e232f5485188",
+      "annual_mwh": {
+        "baseline": 16080696.284888884,
+        "passenger_road": 3182329.22660094,
+        "commercial_road": 653781.8845101711,
+        "space_heat": 2748021.4545,
+        "hot_water": 1236390.0,
+        "cooling": 1148781.1494999998,
+        "total": 25049999.999999996
+      },
+      "baseline_factors": {
+        "calendar_recent": 1.1845059427834,
+        "sarimax": 1.207790863158846,
+        "gam_thermal": 1.1703109924807955,
+        "lightgbm_thermal": 1.207111637373825,
+        "random_forest": 1.2034695428319828,
+        "ffn": 1.2077436314270673,
+        "tcn_median": 1.1808019474798843,
+        "lstm": 1.217950978702599,
+        "nhits": 1.177270296772589,
+        "tft": 1.2138079628278027,
+        "chronos2": 1.2760450569604422,
+        "timesfm3": 1.1885598094296426
+      }
+    },
+    "2050": {
+      "sha256": "3174780fb762f9803fafc052388c39023f47f7d246ebd95915a9e84668272e4c",
+      "annual_mwh": {
+        "baseline": 16490753.684666667,
+        "passenger_road": 4033275.008240924,
+        "commercial_road": 816724.9917590758,
+        "space_heat": 2596290.015,
+        "hot_water": 1236390.0,
+        "cooling": 1143232.967,
+        "total": 26316666.666666668
+      },
+      "baseline_factors": {
+        "calendar_recent": 1.214710818139172,
+        "sarimax": 1.2385895034694454,
+        "gam_thermal": 1.2001538969176506,
+        "lightgbm_thermal": 1.2378929574419213,
+        "random_forest": 1.234157989569776,
+        "ffn": 1.2385410673295503,
+        "tcn_median": 1.2109123710372987,
+        "lstm": 1.24900870173496,
+        "nhits": 1.2072906633150395,
+        "tft": 1.2447600390469435,
+        "chronos2": 1.3085841777041252,
+        "timesfm3": 1.2188680582952771
+      }
+    }
+  }
+}
