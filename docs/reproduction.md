@@ -94,8 +94,8 @@ respectively). The benchmark always supplies a full year.
 ## Automated checks
 
 [GitHub Actions](https://github.com/Roko55/croatia-load-forecasting/actions)
-runs the workbook boundary, input schema, DST, scoring and prior-year
-load feature tests with fixtures and packaged weather. It checks the
+runs the workbook boundary, input schema, DST, scoring, result-table
+integrity and prior-year load feature tests with fixtures and packaged weather. It checks the
 configuration selection and the recorded forecast reproduction report.
 Use the reproduction commands above to refit the models and compare
 the generated forecasts hour by hour.

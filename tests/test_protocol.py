@@ -1,8 +1,11 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 import pandas as pd
 
-from audit import ROOT, read_json, score
+from audit import ROOT, read_json, run, score
 from models._neuralforecast import block_starts
 from training_inputs import (
     COVARIATES, START, WEATHER, boundary, source_covariates, time_grid, validate,
@@ -97,3 +100,20 @@ class ScoringTest(unittest.TestCase):
         self.assertAlmostEqual(result["top_5pct_overlap_pct"], 0.0)
         self.assertAlmostEqual(result["shape_mae_mw"], 100.0)
         self.assertAlmostEqual(result["shape_ramp_mae_mw"], 200.0)
+
+    def test_audit_rejects_duplicate_result_rows(self):
+        for filename in ("by-year.csv", "summary.csv"):
+            with self.subTest(table=filename), TemporaryDirectory() as folder:
+                root = Path(folder)
+                (root / "configs").mkdir()
+                (root / "results").mkdir()
+                (root / "configs" / "protocol.json").write_bytes(
+                    (ROOT / "configs" / "protocol.json").read_bytes())
+                for name in ("by-year.csv", "summary.csv"):
+                    data = (ROOT / "results" / name).read_bytes()
+                    if name == filename:
+                        data += data.splitlines(keepends=True)[1]
+                    (root / "results" / name).write_bytes(data)
+                with patch("audit.ROOT", root):
+                    with self.assertRaisesRegex(ValueError, rf"{filename}: duplicate result row"):
+                        run(root / "cache")

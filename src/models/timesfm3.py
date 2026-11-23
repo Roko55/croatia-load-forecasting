@@ -9,6 +9,7 @@ from ._neuralforecast import inputs
 
 
 def forecast(torch, train, future, folder):
+    """Generate the target series' hourly median from fixed checkpoint weights."""
     from safetensors.torch import load_file
     from timesfm3.torch.model import TimesFM3Torch
     from timesfm3.torch.transformer import RotaryPositionalEmbedding
@@ -23,6 +24,7 @@ def forecast(torch, train, future, folder):
     matrix = pd.concat([past[features], known[features]], ignore_index=True).to_numpy(dtype=np.float32).T
     covs = torch.tensor(np.ascontiguousarray(matrix))[None]
     target = torch.tensor(train.demand_mw.to_numpy(dtype=np.float32)[-cover:])[None, None]
+    # Build the model without allocating weights, then attach the checkpoint tensors on CPU.
     with torch.device("meta"):
         model = TimesFM3Torch(**cfg)
     model.load_state_dict(load_file(str(path), device="cpu"), strict=True, assign=True)

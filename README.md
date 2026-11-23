@@ -1,6 +1,6 @@
 # Croatian hourly electricity demand forecasting
 
-Twelve forecasting workflows generate full-year hourly electricity demand profiles for Croatia, conditional on observed ERA5 weather. **2019–2022** was used for model development. **2023–2025** compares the 12 fixed configurations retrospectively. **2026** is reserved for the final evaluation.
+Twelve forecasting workflows generate full-year hourly electricity demand profiles for Croatia using ERA5, a reconstruction of historical weather. **2019–2022** was used for model development. **2023–2025** compares the 12 fixed configurations retrospectively. **2026** is reserved for the final evaluation.
 
 Two profiles with the same annual energy can have different peaks and ramps. Those differences can affect capacity and storage decisions in energy-system planning.
 
@@ -8,9 +8,11 @@ Two profiles with the same annual energy can have different peaks and ramps. Tho
 
 ## Models and results
 
+The comparison includes a historical calendar baseline, statistical models, tree-based models and neural networks fitted to Croatian data. Chronos-2 and TimesFM-3 use externally pretrained weights.
+
 For 2023–2025, **TimesFM-3** had the lowest mean raw hourly MAE (93.36 MW). **TCN** led on raw MAE among workflows without external pretraining (103.07 MW). **LightGBM** had the lowest mean shape MAE (86.95 MW). See the [checkpoint limitations](docs/methodology.md#pretrained-checkpoints).
 
-Raw MAE scores the forecast as generated. Shape MAE scales the profile to the observed annual energy for scoring only. Both measure mean absolute hourly error in MW and weight each year equally.
+Mean absolute error (MAE) averages the size of the hourly errors in MW. Raw MAE scores the forecast as generated. Shape MAE first matches the forecast's annual energy to the observed total, then measures how closely the hourly profiles align. Period averages give each year equal weight.
 
 Model names link to their Python implementations. Use the ID with `src/train.py --model`.
 

@@ -126,6 +126,17 @@ def score(actual, pred):
     }
 
 
+def read_result_rows(path, row_key):
+    """Index a results table and reject repeated model or model-year keys."""
+    rows = {}
+    with path.open(encoding="utf-8", newline="") as stream:
+        for row in csv.DictReader(stream):
+            key = row_key(row)
+            require(key not in rows, f"{path.name}: duplicate result row for {key}")
+            rows[key] = row
+    return rows
+
+
 def run(cache, period="development"):
     lock = read_json(ROOT / "configs" / "protocol.json")
     methods = lock["models"]
@@ -133,10 +144,11 @@ def run(cache, period="development"):
     directory = ROOT / "results"
     if period == "retrospective":
         directory /= "retrospective"
-    with (directory / "by-year.csv").open(encoding="utf-8", newline="") as stream:
-        expected = {(int(row["year"]), row["model"]): row for row in csv.DictReader(stream)}
+    expected = read_result_rows(directory / "by-year.csv", lambda row: (int(row["year"]), row["model"]))
     planned = {(int(year), method) for year in folds for method in methods}
     require(len(methods) == 12 and set(expected) == planned, "Incomplete comparison table")
+    summary = read_result_rows(directory / "summary.csv", lambda row: row["model"])
+    require(set(summary) == set(methods), "Incomplete summary")
     hashes = read_json(ROOT / "data" / "entsoe-sources.json")
     results = {}
     for key, fold in folds.items():
@@ -153,9 +165,6 @@ def run(cache, period="development"):
                         f"{year} {method} {metric}: {computed[metric]} != {row[metric]}")
             results[key][method] = computed
 
-    with (directory / "summary.csv").open(encoding="utf-8", newline="") as stream:
-        summary = {row["model"]: row for row in csv.DictReader(stream)}
-    require(set(summary) == set(methods), "Incomplete summary")
     for method in methods:
         for metric in METRICS:
             value = math.fsum(year[method][metric] for year in results.values()) / len(results)

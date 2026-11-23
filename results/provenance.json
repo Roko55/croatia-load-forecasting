@@ -21,7 +21,7 @@
   ],
   "reserved_test_year": 2026,
   "protocol_sha256": "c5926667c22096ae7749868ed998bc3bd4995da3e9982930386bd72192d6d5a4",
-  "model_settings_sha256": "d2b0e81143e11e23dd107ab91f264f89f57db94401c01eb7633cbff4c700ad6e",
+  "model_settings_sha256": "ffea53367935e29269d62eb8f87776efbba7c267bc2bcb5facbef6d9fb5d8932",
   "checkpoint_manifest_sha256": "74d540e57363202f5ac22dceddcc831356eebb1e3a07ae0769852ec16ef6c18a",
   "output_hours": {
     "2019": 8760,

@@ -8,6 +8,7 @@ from ._features import calendar
 
 
 def forecast(torch, train, future):
+    """Use the hourly median to limit the influence of an outlying seed."""
     trials = [tcn_fit(torch, train, future, seed) for seed in (42, 43, 44)]
     return np.median(np.stack(trials), axis=0)
 
@@ -51,11 +52,13 @@ def previous_year_features(train, future):
 
 
 def tcn_fit(torch, train, future, seed):
+    """Fit three causal convolutions on masked chunks and predict a full year."""
     from torch import nn
     from torch.nn import functional as F
 
     torch.manual_seed(seed)
     torch.use_deterministic_algorithms(True)
+
     class CausalConv(nn.Module):
         def __init__(self, inputs, dilation):
             super().__init__()

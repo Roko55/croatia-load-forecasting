@@ -10,6 +10,7 @@ CHRONOS_REVISION = "29ec3766d36d6f73f0696f85560a422f50e8498c"
 
 
 def forecast(train, future, checkpoint):
+    """Generate the annual median forecast and adjust its level using historical demand."""
     import torch
     from chronos import Chronos2Pipeline
 
@@ -42,6 +43,7 @@ def forecast(train, future, checkpoint):
     assert pd.DatetimeIndex(pred.timestamp).as_unit('ns').equals(
         pd.DatetimeIndex(target.timestamp).as_unit('ns'))
     values = pred['0.5'].to_numpy(dtype=float)
+    # Move the annual mean halfway toward the preceding three-year mean without changing the profile shape.
     origin = future.timestamp_utc.iloc[0]
     past_mean = train.loc[train.timestamp_utc >= origin - pd.DateOffset(years=3), "demand_mw"].mean()
     values *= 0.5 + 0.5 * past_mean / values.mean()

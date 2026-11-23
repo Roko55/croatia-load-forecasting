@@ -53,26 +53,9 @@
         "temperature_rijeka_c_avg24",
         "temperature_osijek_c_avg24"
       ],
-      "order": [
-        1,
-        0,
-        0
-      ],
-      "seasonal_order": [
-        1,
-        0,
-        0,
-        24
-      ],
-      "maxiter": 100,
       "spline_intervals": 8,
       "smoothing": 10.0,
       "ridge": 1e-06,
-      "annual_harmonics": 3,
-      "use_exog": true,
-      "trend": "n",
-      "enforce_stationarity": true,
-      "enforce_invertibility": true,
       "hour_by_weekend": true,
       "linear_trend": true
     }

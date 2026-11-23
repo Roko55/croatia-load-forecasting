@@ -7,6 +7,7 @@ from ._features import calendar
 
 
 def forecast(torch, train, future, seed):
+    """Fit on 14-day blocks with 24 hours of warm-up covariates per block."""
     from torch import nn
 
     torch.manual_seed(seed)
@@ -33,6 +34,7 @@ def forecast(torch, train, future, seed):
     opt = torch.optim.AdamW([*net.parameters(), *head.parameters()], lr=.002)
 
     def model(t):
+        # The warm-up initializes the recurrent state. Return the following 14 days.
         return head(net(t)[0])[:, context:, 0]
 
     for _ in range(18):
@@ -47,6 +49,7 @@ def forecast(torch, train, future, seed):
     net.eval()
     head.eval()
     with torch.inference_mode():
+        # Join the forecast blocks in time order and trim padding after the last forecast hour.
         prediction = model(torch.from_numpy(pack(f, x[-context:]))).flatten()[:len(f)].numpy()
     return prediction.astype(float)*y_sd+y_mean, {"seed":seed, "epochs":18, "hidden_units":16, "chunk_hours":step,
                                                    "warmup_hours":context, "uses_future_load":False}
