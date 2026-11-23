@@ -63,8 +63,9 @@ records the largest hourly difference and tolerance for each of the 36
 profiles. The largest absolute difference across 315,648 hourly values
 was $9.10 \times 10^{-13}$ MW. The
 [provenance record](../results/retrospective/provenance.json)
-records the runtime, exact commands and input manifest hashes, as well as
-the code and driver used for the original archive.
+records the runtime, exact commands and input manifest hashes. It also
+identifies the original model code commit and the checksum of the local
+driver that generated the archive.
 
 The preparation and generation commands accept 2019–2025. Input preparation defaults to 2019–2022. Each fold
 uses measured demand up to the preceding December 31 and supplies the target

@@ -8,7 +8,7 @@ from training_inputs import WEATHER
 
 
 def calendar(frame, weather):
-    """Holiday flag supplied by the calendar input for every LOCAL hour, never merged at midnight here."""
+    """Encode Zagreb time and use the holiday flag already supplied for each hour."""
     local = pd.DatetimeIndex(frame.timestamp_utc).tz_convert(ZoneInfo("Europe/Zagreb"))
     if not frame.is_holiday.isin([0, 1]).all():
         raise ValueError("is_holiday must be binary, all local hours marked by the calendar input")

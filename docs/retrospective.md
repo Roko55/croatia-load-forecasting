@@ -23,7 +23,9 @@ All MAEs are in MW. Raw MAE scores the original forecast. Shape MAE scores after
 
 ![Raw and equal-energy MAE by model and year, with period means](../results/retrospective/comparison.png)
 
-TimesFM-3 had the lowest mean raw MAE (94.98 MW) and the highest overlap with the observed top 5% of hours (69.22%). LightGBM led the workflows without external pretraining on mean raw MAE (110.11 MW) and had the lowest mean shape MAE overall (90.44 MW), followed by the MLP on shape MAE (91.06 MW). LightGBM had the lowest raw MAE in 2023, and TimesFM-3 led in 2024 and 2025. The MLP had the lowest shape MAE in 2025. These rankings describe three years, and the cause of the differences across years was outside the scope of this evaluation. TimesFM-3 was released after these forecast origins, and overlap between its pretraining data and Croatian load remains unverified. See [pretrained checkpoints](methodology.md#pretrained-checkpoints).
+LightGBM had the lowest raw MAE in 2023. TimesFM-3 led in 2024 and 2025 and had the highest mean overlap with the observed top 5% of hours (69.22%). LightGBM led on mean shape MAE (90.44 MW), while the MLP had the lowest shape MAE in 2025.
+
+These rankings describe the three evaluation years. TimesFM-3 was released after their forecast origins, and overlap between its pretraining data and Croatian load remains unverified. See [pretrained checkpoints](methodology.md#pretrained-checkpoints).
 
 ## Profiles and downloads
 

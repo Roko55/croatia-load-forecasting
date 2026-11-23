@@ -6,7 +6,11 @@ Twelve forecasting workflows generate full-year hourly electricity demand profil
 
 ## Models and results
 
-The table reports 2023–2025 means. Click a model name to open its Python implementation. Use the ID with `src/train.py --model`.
+For 2023–2025, **TimesFM-3** had the lowest mean raw hourly MAE (94.98 MW). **LightGBM** had the lowest mean shape MAE (90.44 MW) and the lowest raw MAE among workflows without external pretraining (110.11 MW). See the [checkpoint limitations](docs/methodology.md#pretrained-checkpoints).
+
+Raw MAE scores the forecast as generated. Shape MAE scales the profile to the observed annual energy for scoring only. Both measure mean absolute hourly error in MW and weight each year equally.
+
+Model names link to their Python implementations. Use the ID with `src/train.py --model`.
 
 | Model code | `--model` ID | Raw hourly MAE (MW) | Equal-energy shape MAE (MW) |
 |---|---|---:|---:|
@@ -22,10 +26,6 @@ The table reports 2023–2025 means. Click a model name to open its Python imple
 | [Calendar baseline](src/models/calendar_baseline.py) | `calendar_recent` | 140.48 | 135.68 |
 | [SARIMAX](src/models/sarimax.py) | `sarimax` | 160.18 | 151.37 |
 | [Chronos-2](src/models/chronos2.py) | `chronos2` | 287.18 | 277.29 |
-
-**Raw hourly MAE** scores the forecast as generated. **Shape MAE** scores the same hourly profile after scaling its annual energy to the observed total. This scaling is applied only during evaluation. Both report mean absolute hourly error in MW, with equal weight per year.
-
-TimesFM-3 had the lowest mean raw MAE over 2023–2025. Among workflows without external pretraining, LightGBM had the lowest mean raw MAE. It also had the lowest mean shape MAE across all 12 workflows. The [methodology](docs/methodology.md#pretrained-checkpoints) explains checkpoint availability and the uncertainty about pretraining overlap.
 
 [Per-year scores and observed-vs-forecast curves](docs/retrospective.md) · [Development results for 2019–2022](docs/results.md)
 

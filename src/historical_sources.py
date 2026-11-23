@@ -106,7 +106,7 @@ def easter_sunday(year: int) -> date:
 
 
 def croatian_holidays(year: int) -> dict[date, str]:
-    """Croatian public holidays for the development window.
+    """Build the Croatian public holiday calendar from 2015 onward.
     Sources: NN 136/2002 + NN 55/2008; NN 110/2019 effective 2020-01-01.
     NN 72/2025 changes memorial days only. No substitute Monday.
     Religious individual entitlements and special election days are excluded.

@@ -1,4 +1,4 @@
-"""Render weekly profiles and the hourly example from the frozen scoring inputs."""
+"""Render weekly load profiles, the hourly peak example and retrospective MAE."""
 import argparse
 import csv
 from datetime import datetime, timedelta
