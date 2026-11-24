@@ -6,6 +6,7 @@ import csv
 from datetime import datetime, time, timedelta
 import hashlib
 import io
+import json
 import math
 from pathlib import Path
 from statistics import mean
@@ -19,8 +20,8 @@ from historical_sources import ZAGREB
 INPUTS = ROOT / "data" / "planning"
 
 
-def passenger_shapes(path, hashes):
-    """Sum fixed market and prosumer charging before averaging by local hour."""
+def passenger_series(path, hashes):
+    """Sum fixed market and prosumer charging on the source clock."""
     by_variant = []
     with zipfile.ZipFile(path) as archive:
         for variant in ("MARKET", "PROSUMER"):
@@ -42,14 +43,36 @@ def passenger_shapes(path, hashes):
                 require(day == expected_day.strftime("%d.%m.") and hour == index % 24 + 1,
                         f"Unexpected interval order in {name}")
             by_variant.append(values)
+    series = []
+    for market, prosumer in zip(*by_variant, strict=True):
+        require(market[:2] == prosumer[:2], "TYNDP variants use different interval labels")
+        series.append(market[2] + prosumer[2])
+    return series
+
+
+def passenger_shapes(series):
+    """Build the two typical days used in the published reference case."""
     weekdays = [[] for _ in range(24)]
     weekends = [[] for _ in range(24)]
-    for index, (market, prosumer) in enumerate(zip(*by_variant, strict=True)):
-        require(market[:2] == prosumer[:2], "TYNDP variants use different interval labels")
+    for index, value in enumerate(series):
         day, hour = divmod(index, 24)
         if 7 <= day <= 13:
-            (weekdays if day <= 11 else weekends)[hour].append(market[2] + prosumer[2])
+            (weekdays if day <= 11 else weekends)[hour].append(value)
     return [mean(group) for group in weekdays], [mean(group) for group in weekends]
+
+
+def seasonal_passenger_shapes(series):
+    """Extract the six distinct days in the 2030 HR00 fixed charging source."""
+    source_dates = {
+        "winter_weekday": (1, 8), "winter_weekend": (1, 13), "winter_holiday": (1, 1),
+        "summer_weekday": (5, 2), "summer_weekend": (5, 5), "summer_holiday": (5, 1),
+    }
+    days = [series[i:i + 24] for i in range(0, len(series), 24)]
+    start = datetime(2018, 1, 1)
+    templates = {key: days[(datetime(2018, *date) - start).days] for key, date in source_dates.items()}
+    require(len({tuple(x) for x in templates.values()}) == 6 and
+            all(day in templates.values() for day in days), "Unexpected daily TYNDP charging shapes")
+    return {"source_dates": source_dates, "warm_months": [5, 6, 7, 8, 9, 10], "profiles": templates}
 
 
 def seconds(value):
@@ -124,15 +147,21 @@ def main():
     parser.add_argument("--nlr-schedules", type=Path, required=True)
     parser.add_argument("--when2heat", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--seasonal-passenger-output", type=Path)
     args = parser.parse_args()
     sources = read_json(INPUTS / "sources.json")
     require(digest(args.nlr_schedules) == sources["commercial_road"]["sha256"],
             "NLR schedules do not match the cited source")
-    weekday, weekend = passenger_shapes(args.tyndp_demand, sources["passenger_road"]["workbook_sha256"])
+    passenger = passenger_series(args.tyndp_demand, sources["passenger_road"]["workbook_sha256"])
+    weekday, weekend = passenger_shapes(passenger)
     hot_water, _ = hot_water_shape(args.when2heat, sources["hot_water"]["house_population_share"],
                                    sources["hot_water"]["selected_rows_sha256"])
     args.output.parent.mkdir(parents=True, exist_ok=True)
     write_weights(args.output, weekday, weekend, commercial_shape(args.nlr_schedules), hot_water)
+    if args.seasonal_passenger_output:
+        args.seasonal_passenger_output.parent.mkdir(parents=True, exist_ok=True)
+        payload = json.dumps(seasonal_passenger_shapes(passenger), indent=2) + "\n"
+        args.seasonal_passenger_output.write_bytes(payload.encode("utf-8"))
 
 
 if __name__ == "__main__":

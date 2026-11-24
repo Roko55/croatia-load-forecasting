@@ -1,0 +1,36 @@
+{
+  "attribution": "Hotmaps project, adapted to extract the Croatian HR03 and HR04 rows",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "files": [
+    {
+      "use": "heating",
+      "sector": "household",
+      "file": "hotmaps-res-heating.csv",
+      "url": "https://gitlab.com/hotmaps/load_profile/load_profile_residential_heating_generic/-/raw/master/data/hotmaps_task_2.7_load_profile_residential_heating_generic.csv",
+      "sha256": "a865df7b46071751cc41c17fc02bf307d98b1a91db427ed5b88d2a1ef91714a2"
+    },
+    {
+      "use": "heating",
+      "sector": "service",
+      "file": "hotmaps-ser-heating.csv",
+      "url": "https://gitlab.com/hotmaps/load_profile/load_profile_tertiary_heating_generic/-/raw/master/data/hotmaps_task_2.7_load_profile_tertiary_heating_generic.csv",
+      "sha256": "a76118df40195b79197937577ca5c97431a839bd57bb5e116a43b444ac56b43b"
+    },
+    {
+      "use": "cooling",
+      "sector": "household",
+      "file": "hotmaps-res-cooling.csv",
+      "url": "https://gitlab.com/hotmaps/load_profile/load_profile_residential_cooling_generic/-/raw/master/data/hotmaps_task_2.7_load_profile_residential_cooling_generic.csv",
+      "sha256": "8ee3a626ee8cae6863d557209318081d857b172852953e04c876a69514927913"
+    },
+    {
+      "use": "cooling",
+      "sector": "service",
+      "file": "hotmaps-ser-cooling.csv",
+      "url": "https://gitlab.com/hotmaps/load_profile/load_profile_tertiary_cooling_generic/-/raw/e28821ad/data/hotmaps_task_2.7_load_profile_tertiary_cooling_generic.csv",
+      "sha256": "be504ae73011075538c9ebf913311dd6bd32fac92c1b891b4712e72e0ab0bb6b"
+    }
+  ],
+  "extract_sha256": "4b4a61b65a31161edc3d8b9b5998d533944d2b97e7b56461c556f2db27c2635e"
+}

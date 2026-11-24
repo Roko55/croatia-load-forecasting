@@ -46,7 +46,7 @@ def interpolate_anchors(anchor_rows, year):
     return {name: left[name] + fraction * (right[name] - left[name]) for name in left}
 
 
-def annual_amounts(config, year):
+def annual_amounts(config, year, hot_water_case="continuity"):
     """Keep the annual energy accounting independent of the hourly forecast."""
     necp = interpolate_anchors(config["necp_pj"], year)
     tyndp = interpolate_anchors(config["tyndp_gwh"], year)
@@ -55,7 +55,10 @@ def annual_amounts(config, year):
     require(vehicle_total > 0, f"{year}: TYNDP vehicle split is undefined")
     passenger = road * tyndp["passenger_road"] / vehicle_total
     space_heat = (tyndp["household_space_heat"] + tyndp["service_space_heat"]) * GWH_TO_MWH
-    hot_water = config["reference_gwh"]["household_hot_water"] * GWH_TO_MWH
+    hot_water = (
+        tyndp["household_hot_water_sensitivity"] if hot_water_case == "tyndp"
+        else config["reference_gwh"]["household_hot_water"]
+    ) * GWH_TO_MWH
     cooling = (tyndp["household_cooling"] + tyndp["service_cooling"]) * GWH_TO_MWH
     total = (necp["final_electricity"] + necp["network_losses"]) * MWH_PER_PJ
     base = total - road - space_heat - hot_water - cooling
@@ -71,25 +74,29 @@ def annual_amounts(config, year):
     }
 
 
-def source_weights(config, clock):
+def regional_weather(config):
+    """Load the pinned temperatures, including both boundaries of the 2023 UTC slice."""
     training_sources = read_json(ROOT / "data" / "training-sources.json")
-    record = training_sources["weather_retrospective"]
-    early_record = training_sources["weather"]
+    columns = ["timestamp_utc", *[f"temperature_{city}_c" for city in config["region_weights"]]]
+    parts = []
+    for key in ("weather", "weather_retrospective"):
+        record = training_sources[key]
+        path = ROOT / "data" / record["file"]
+        require(digest(path) == record["sha256"], f"Weather checksum differs: {path.name}")
+        parts.append(pd.read_parquet(path, columns=columns).set_index("timestamp_utc"))
+    return pd.concat(parts, verify_integrity=True)
+
+
+def source_weights(config, clock, temperature=None):
     regions = list(config["region_weights"])
     population = np.asarray(list(config["region_weights"].values()), dtype=float)
     require((population > 0).all() and math.isclose(math.fsum(population), 1.0),
             "Regional weights must be positive and sum to one")
     window = config["cooling_temperature_window_hours"]
-    columns = ["timestamp_utc", *[f"temperature_{city}_c" for city in regions]]
-
-    def weather(source):
-        path = ROOT / "data" / source["file"]
-        require(digest(path) == source["sha256"], f"Weather checksum differs: {path.name}")
-        return pd.read_parquet(path, columns=columns).set_index("timestamp_utc")
-
     # The preceding hours are needed for the first cooling interval of the UTC year.
     weather_index = pd.date_range(clock[0] - pd.Timedelta(hours=window - 1), clock[-1], freq="h")
-    temperature = pd.concat((weather(early_record).tail(window - 1), weather(record)))
+    if temperature is None:
+        temperature = regional_weather(config)
     temperature = temperature.reindex(weather_index)
     require(np.isfinite(temperature.to_numpy()).all(), "Incomplete regional weather history")
     heat = np.maximum(config["heating_threshold_c"] - temperature.loc[clock].to_numpy(), 0)
@@ -119,6 +126,20 @@ def source_weights(config, clock):
     }
 
 
+def seasonal_passenger_weights(clock, source):
+    """Apply TYNDP seasonal day shapes on the common Croatian calendar."""
+    local = clock.tz_convert(ZAGREB)
+    holidays = set().union(*(croatian_holidays(y) for y in set(local.year)))
+    result = []
+    for stamp in local:
+        season = "summer" if stamp.month in source["warm_months"] else "winter"
+        day_type = "weekend" if stamp.weekday() >= 5 else "weekday"
+        if stamp.date() in holidays:
+            day_type = "holiday"
+        result.append(source["profiles"][f"{season}_{day_type}"][stamp.hour])
+    return np.asarray(result)
+
+
 def components(weights, amounts):
     return {
         "road_charging": scaled(weights["passenger_road"], amounts["passenger_road"]) +
@@ -129,18 +150,18 @@ def components(weights, amounts):
     }
 
 
-def result_year(models, weights, amounts):
+def result_year(models, added, amounts, flexible_mwh=0):
     """Remove historical overlap before fixing each model to the same annual base."""
-    added = components(weights, amounts)
     added_total = sum(added.values())
     series, factors = dict(added), {}
     for name, residual in models.items():
         baseline = scaled(residual, amounts["baseline"])
         total = baseline + added_total
-        require(abs(math.fsum(total) - amounts["total"]) < ENERGY_TOLERANCE_MWH,
-                f"{name}: total annual electricity does not close")
+        require(abs(math.fsum(total) + flexible_mwh - amounts["total"]) < ENERGY_TOLERANCE_MWH,
+                f"{name}: fixed and flexible annual electricity does not close")
         series[f"{name}__baseline"] = baseline
-        series[f"{name}__total"] = total
+        field = "fixed_demand" if flexible_mwh else "total"
+        series[f"{name}__{field}"] = total
         factors[name] = amounts["baseline"] / math.fsum(residual)
     return series, factors
 
@@ -155,13 +176,43 @@ def write_hourly(path, timestamps, series):
                              for stamp, values in zip(timestamps, zip(*series.values(), strict=True), strict=True))
 
 
-def build(output):
+def apply_hotmaps(added, profile, hotmaps, sector_gwh, weights, hot_water_mwh):
+    """Set alternative thermal shapes while preserving separate sector energies."""
+    added["cooling"] = sum(
+        scaled(hotmaps["cooling", sector], sector_gwh[f"{sector}_cooling"] * GWH_TO_MWH)
+        for sector in ("household", "service")
+    )
+    if profile == "hotmaps-thermal":
+        added["heating_and_hot_water"] = scaled(weights["hot_water"], hot_water_mwh) + sum(
+            scaled(hotmaps["heating", sector], sector_gwh[f"{sector}_space_heat"] * GWH_TO_MWH)
+            for sector in ("household", "service")
+        )
+
+
+def build(output, thermal_profile="degree-hours", rebase_thermal=False, hot_water_case="continuity",
+          ev_case="fixed", passenger_shape="reference"):
+    require(thermal_profile in ("degree-hours", "hotmaps-cooling", "hotmaps-thermal"), "Unknown thermal profile")
+    require(hot_water_case in ("continuity", "tyndp"), "Unknown hot-water energy case")
+    require(ev_case in ("fixed", "tyndp-flex"), "Unknown passenger charging case")
+    require(passenger_shape in ("reference", "tyndp-seasonal"), "Unknown passenger charging shape")
+    require(not rebase_thermal or thermal_profile != "degree-hours", "Rebasing requires a Hotmaps profile")
     config = read_json(CONFIG)
     protocol = read_json(ROOT / "configs" / "protocol.json")
     reference = config["reference_gwh"]
     timestamps = hours(REFERENCE_YEAR)
     clock = pd.to_datetime(timestamps, utc=True)
-    weights = source_weights(config, clock)
+    temperature = regional_weather(config)
+    weights = source_weights(config, clock, temperature)
+    if thermal_profile != "degree-hours":
+        from planning_hotmaps import thermal_weights
+
+        hotmaps = thermal_weights(clock, temperature, config["region_weights"])
+    if ev_case == "tyndp-flex":
+        from planning_ev import PUBLISHED
+
+        ev = read_json(PUBLISHED)
+        shares = {str(r["YEAR"]): {"flex_share": r["EV_flex_share"] / 100}
+                  for r in ev["EV_FLEX_SHARE"]}
     archive = protocol["retrospective"][str(REFERENCE_YEAR)]
     models = predictions(REFERENCE_YEAR, archive, protocol["models"])
     historical = components(weights, {
@@ -171,6 +222,13 @@ def build(output):
         "hot_water": reference["household_hot_water"] * GWH_TO_MWH,
         "cooling": (reference["household_cooling"] + reference["service_cooling"]) * GWH_TO_MWH,
     })
+    future_weights = weights
+    if passenger_shape == "tyndp-seasonal":
+        passenger_file = INPUTS / "tyndp-hr-passenger-shapes.json"
+        future_weights = dict(weights, passenger_road=seasonal_passenger_weights(clock, read_json(passenger_file)))
+    if rebase_thermal:
+        apply_hotmaps(historical, thermal_profile, hotmaps, reference, weights,
+                      reference["household_hot_water"] * GWH_TO_MWH)
     overlap = sum(historical.values())
     residuals = {name: np.asarray(values) - overlap for name, values in models.items()}
     for name, residual in residuals.items():
@@ -195,12 +253,40 @@ def build(output):
         "minimum_reference_residual_mw": {name: float(values.min()) for name, values in residuals.items()},
         "years": {},
     }
+    if (thermal_profile, hot_water_case, ev_case, passenger_shape) != (
+        "degree-hours", "continuity", "fixed", "reference"
+    ):
+        manifest["sensitivity"] = {
+            "thermal_profile": thermal_profile,
+            "rebase_thermal": rebase_thermal,
+            "hot_water_case": hot_water_case,
+            "ev_case": ev_case,
+            "passenger_shape": passenger_shape,
+        }
+        if thermal_profile != "degree-hours":
+            manifest["sensitivity"]["hotmaps_sha256"] = digest(INPUTS / "hotmaps-hr.csv.gz")
+        if ev_case == "tyndp-flex":
+            manifest["sensitivity"]["tyndp_ev_sha256"] = digest(PUBLISHED)
+        if passenger_shape == "tyndp-seasonal":
+            manifest["sensitivity"]["passenger_shapes_sha256"] = digest(passenger_file)
     for year in PLANNING_YEARS:
-        amounts = annual_amounts(config, year)
-        series, factors = result_year(residuals, weights, amounts)
+        amounts = annual_amounts(config, year, hot_water_case)
+        flexible_mwh = 0
+        if ev_case == "tyndp-flex":
+            share = interpolate_anchors(shares, year)["flex_share"]
+            require(0 < share < 1, f"{year}: invalid TYNDP flexible share")
+            flexible_mwh = amounts["passenger_road"] * share
+        added = components(future_weights, dict(amounts, passenger_road=amounts["passenger_road"] - flexible_mwh))
+        if thermal_profile != "degree-hours":
+            sector_gwh = interpolate_anchors(config["tyndp_gwh"], year)
+            apply_hotmaps(added, thermal_profile, hotmaps, sector_gwh, weights, amounts["hot_water"])
+        series, factors = result_year(residuals, added, amounts, flexible_mwh)
         path = output / f"{year}.csv.gz"
         write_hourly(path, timestamps, series)
         manifest["years"][year] = {"sha256": digest(path), "annual_mwh": amounts, "baseline_factors": factors}
+        if ev_case == "tyndp-flex":
+            manifest["years"][year]["flexible_passenger_grid_mwh"] = flexible_mwh
+            manifest["years"][year]["fixed_demand_mwh"] = amounts["total"] - flexible_mwh
 
     (output / "manifest.json").write_bytes((json.dumps(manifest, indent=2) + "\n").encode("utf-8"))
 
@@ -209,8 +295,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / "work" / "planning",
                         help="Directory for scenario tables and their manifest")
+    parser.add_argument("--thermal-profile", choices=("degree-hours", "hotmaps-cooling", "hotmaps-thermal"),
+                        default="degree-hours")
+    parser.add_argument("--rebase-thermal", action="store_true",
+                        help="Use the selected Hotmaps profiles in the 2023 deduction as well")
+    parser.add_argument("--hot-water", choices=("continuity", "tyndp"), default="continuity",
+                        help="Annual electricity trajectory for household hot water")
+    parser.add_argument("--ev-case", choices=("fixed", "tyndp-flex"), default="fixed",
+                        help="Export fixed load with a separate grid energy budget for flexible charging")
+    parser.add_argument("--passenger-shape", choices=("reference", "tyndp-seasonal"), default="reference",
+                        help="Use TYNDP's six seasonal and day-type shapes for future passenger charging")
     args = parser.parse_args()
-    build(args.output)
+    build(args.output, args.thermal_profile, args.rebase_thermal, args.hot_water, args.ev_case, args.passenger_shape)
 
 
 if __name__ == "__main__":

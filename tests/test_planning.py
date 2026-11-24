@@ -64,3 +64,39 @@ class PlanningTests(unittest.TestCase):
             self.assertEqual(digest(archive / reference), manifest["reference_sha256"])
             self.assertEqual(read_table(archive / reference), read_table(destination / reference))
             self.assertGreater(min(manifest["minimum_reference_residual_mw"].values()), 0)
+
+    def test_hotmaps_cooling_changes_only_the_future_cooling_addition(self):
+        archive = ROOT / "results" / "planning"
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary)
+            build(destination, thermal_profile="hotmaps-cooling")
+            reference = "reference-2023.csv.gz"
+            self.assertEqual(read_table(archive / reference), read_table(destination / reference))
+            previous = read_table(archive / "2050.csv.gz")
+            updated = read_table(destination / "2050.csv.gz")
+            for field in ("road_charging_mw", "heating_and_hot_water_mw", "calendar_recent__baseline_mw"):
+                self.assertEqual([row[field] for row in previous], [row[field] for row in updated])
+            original_cooling = [float(row["cooling_mw"]) for row in previous]
+            updated_cooling = [float(row["cooling_mw"]) for row in updated]
+            self.assertAlmostEqual(math.fsum(original_cooling), math.fsum(updated_cooling), places=3)
+            self.assertAlmostEqual(max(updated_cooling), 1236.13, places=1)
+
+    def test_hotmaps_rebase_and_flexible_passenger_energy(self):
+        archive = ROOT / "results" / "planning"
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary)
+            build(destination, thermal_profile="hotmaps-thermal", rebase_thermal=True,
+                  hot_water_case="tyndp", ev_case="tyndp-flex", passenger_shape="tyndp-seasonal")
+            reference = "reference-2023.csv.gz"
+            self.assertNotEqual(read_table(archive / reference), read_table(destination / reference))
+            manifest = json.loads((destination / "manifest.json").read_text(encoding="utf-8"))
+            self.assertGreater(min(manifest["minimum_reference_residual_mw"].values()), 0)
+            for year, receipt in manifest["years"].items():
+                amounts = receipt["annual_mwh"]
+                self.assertEqual(receipt["flexible_passenger_grid_mwh"], amounts["passenger_road"] / 2)
+                rows = read_table(destination / f"{year}.csv.gz")
+                for model in receipt["baseline_factors"]:
+                    self.assertNotIn(f"{model}__total_mw", rows[0])
+                    fixed = math.fsum(float(row[f"{model}__fixed_demand_mw"]) for row in rows)
+                    self.assertAlmostEqual(fixed, receipt["fixed_demand_mwh"], places=3)
+            self.assertAlmostEqual(manifest["years"]["2050"]["annual_mwh"]["hot_water"], 466307.91, places=2)
