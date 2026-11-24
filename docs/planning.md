@@ -2,7 +2,7 @@
 
 The five annual planning tables combine 12 forecast-based residual shapes with common electricity profiles for road charging, space heating and household hot water, and space cooling. Every model supplies the same annual electricity in a given planning year. The hourly shapes use the 2023 weather and calendar so that each model can be compared under the same conditions. [The consolidated planning case](#consolidated-planning-case) uses one thermal profile family and the seasonal TYNDP passenger profiles.
 
-![Winter and summer weeks in the 2050 planning scenario](../results/planning/2050-preview.png)
+For the fixed charging experiment, start with the [H2RES demand package](h2res-demand.md) and its [published hourly inputs](../results/planning/h2res/).
 
 ## Annual electricity
 
@@ -34,7 +34,7 @@ The Croatia county groups use the [2023 DZS population table](https://podaci.dzs
 
 For a one-hour interval, MW numerically equals the MWh delivered in that hour. Each nonnegative shape is divided by its annual sum and multiplied by its MWh target. Space heat and hot water are scaled separately before combining. So are passenger and commercial charging. The shared 2023 sector estimates are subtracted from each archived forecast hour by hour. The generator rejects a negative residual. It then scales each model's residual to the common annual base and adds the three future components.
 
-## Reproduce and inspect
+## Degree-hour reference case
 
 Using Python 3.12 with the [training dependencies](../requirements-training.txt):
 
@@ -42,9 +42,9 @@ Using Python 3.12 with the [training dependencies](../requirements-training.txt)
 python src/planning.py --output work/planning
 ```
 
-The [published tables](../results/planning/) have 8,760 UTC rows. `reference-2023.csv.gz` contains the three deductions and the 12 residuals. Each planning-year file contains the three shared sector columns followed by `<model>__baseline_mw` and `<model>__total_mw` for each model. Use the total column for the selected model. Keep `reference_timestamp_utc` aligned with the corresponding weather and renewable availability series. Planning years label the annual scenario parameters. The timestamps identify the shared reference chronology.
+The [degree-hour reference tables](../results/planning/) have 8,760 UTC rows. `reference-2023.csv.gz` contains the three deductions and the 12 residuals. Each planning-year file contains the three shared sector columns followed by `<model>__baseline_mw` and `<model>__total_mw` for each model. Use the total column for the selected model. Keep `reference_timestamp_utc` aligned with the corresponding weather and renewable availability series. Planning years label the annual scenario parameters. The timestamps identify the shared reference chronology.
 
-The [manifest](../results/planning/manifest.json) records annual MWh, scale factors and file hashes. The [source register](../data/planning/sources.json) identifies the source files, workbook cells and revisions used in the [scenario configuration](../configs/planning.json). The compact [local-hour templates](../data/planning/local-hour-weights.csv) are included so the main generator runs offline. To rebuild them from the original downloads, install `openpyxl==3.1.5` and run:
+The [degree-hour reference manifest](../results/planning/manifest.json) records annual MWh, scale factors and file hashes. The [source register](../data/planning/sources.json) identifies the source files, workbook cells and revisions used in the [scenario configuration](../configs/planning.json). The compact [local-hour templates](../data/planning/local-hour-weights.csv) are included so the main generator runs offline. To rebuild them from the original downloads, install `openpyxl==3.1.5` and run:
 
 ```sh
 python src/planning_sources.py --tyndp-demand Demand.zip --nlr-schedules veh_schedules.csv --when2heat when2heat.csv --output work/local-hour-weights.csv
@@ -88,7 +88,7 @@ To reproduce the compact source files, use the file names and URLs in the source
 
 The consolidated fixed case combines `hotmaps-all` with `tyndp-seasonal` and uses the published 2023 deduction. This holds the residual shapes fixed in the first comparison. The alternative with `--rebase-thermal` rebuilds the historical thermal deduction as well. For 2050, the fixed case retains 26.317 TWh and yields total peaks of 4.548–4.963 GW across the 12 models on the 2023 weather clock. Adding `--ev-case tyndp-flex` removes 2.017 TWh from the fixed tables and reserves it for the flexible charging module. Its fixed demand peaks are not total system peaks.
 
-![Winter and summer weeks for the consolidated fixed 2050 case](../results/planning/2050-hotmaps-tyndp-preview.png)
+The [H2RES demand package](h2res-demand.md) provides the five consolidated tables, their manifest and plots from the same files.
 
 TYNDP supplies modelled passenger charging shapes. The NLR commercial proxy uses 100 operating days from an American warehouse-delivery fleet. Its hourly shares reproduce the expected load shape of the published minimum-power charging strategy, computed across the complete sample instead of resampling fleet days. Hotmaps supplies useful heating and cooling shapes based on empirical schedules and regional temperature. Applying those shapes to electricity budgets assumes a proportional relation between useful demand and electricity use within each component. The data support a reproducible scenario with cited assumptions. Direct validation of commercial charging and temperature-dependent conversion efficiency requires additional measurements or technology data. [Borlaug et al. (2021)](https://doi.org/10.1038/s41560-021-00855-0) · [NLR input schedules](https://github.com/NatLabRockies/hdev-depot-charging-2021/tree/61530df51f6cd7d64f014ebbf8714cef24c8ca70/data/fleet-schedules/fleet2-warehouse-delivery) · [Hotmaps report](https://www.hotmaps-project.eu/wp-content/uploads/2018/03/D2.3-Hotmaps_for-upload_revised-final_.pdf)
 

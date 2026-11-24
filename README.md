@@ -8,7 +8,7 @@ Two profiles with the same annual energy can have different peaks and ramps. Tho
 
 ## Electricity demand for capacity planning
 
-The [planning scenarios](docs/planning.md) combine the 12 forecast-based shapes with common road charging, heating, hot water and cooling profiles for 2030–2050. [Download the hourly tables](results/planning/) or reproduce them with `python src/planning.py`.
+The [H2RES demand package](docs/h2res-demand.md) contains ready-to-import hourly inputs for 12 models in each of five planning years from 2030 to 2050. It combines the Croatian TYNDP seasonal passenger charging profiles with Hotmaps heating, hot water and cooling. [Download the inputs](results/planning/h2res/) · [View the figures and reproduction commands](docs/h2res-demand.md) · [Read the full methodology and source register](docs/planning.md).
 
 ## Models and results
 

@@ -26,14 +26,26 @@ class PlanningTests(unittest.TestCase):
                 scaled(values, 90)
 
     def test_published_profiles_match_generator_and_balance(self):
-        archive = ROOT / "results" / "planning"
+        reference = ROOT / "results" / "planning"
+        cases = {
+            reference: {},
+            reference / "h2res": {"thermal_profile": "hotmaps-all", "passenger_shape": "tyndp-seasonal"},
+        }
+        for archive, options in cases.items():
+            with self.subTest(archive=archive.name):
+                self.check_published_profiles(archive, **options)
+
+    def check_published_profiles(self, archive, **options):
         manifest = json.loads((archive / "manifest.json").read_text(encoding="utf-8"))
         protocol = json.loads((ROOT / "configs" / "protocol.json").read_text(encoding="utf-8"))
         timestamps = hours(2023)
         self.assertEqual(tuple(map(int, manifest["years"])), PLANNING_YEARS)
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary)
-            build(destination)
+            build(destination, **options)
+            generated_manifest = json.loads((destination / "manifest.json").read_text(encoding="utf-8"))
+            for field in ("clock", "reference_hours", "reference_year", "sensitivity"):
+                self.assertEqual(manifest.get(field), generated_manifest.get(field))
             for year in PLANNING_YEARS:
                 file = f"{year}.csv.gz"
                 receipt = manifest["years"][str(year)]
