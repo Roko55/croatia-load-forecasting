@@ -19,6 +19,13 @@ TEMPERATURE_RANGES = {"heating": (-15, 17), "cooling": (19, 40)}
 KEYS = ["region", "day_type", "hour", "temperature_c"]
 
 
+def hot_water_season(day):
+    month_day = day.month, day.day
+    if (5, 15) <= month_day <= (9, 14):
+        return 0
+    return 1 if month_day >= (11, 1) or month_day <= (3, 20) else 2
+
+
 def thermal_weights(clock, temperature, population):
     """Read full local days and return household and service weights for each end use."""
     path = DATA / "hotmaps-hr.csv.gz"
@@ -46,7 +53,8 @@ def thermal_weights(clock, temperature, population):
     require(np.isfinite(averages.to_numpy()).all(), "Invalid daily-average Hotmaps weather")
     rounded_temperature = np.rint(averages.to_numpy()).astype(int)
     output = {}
-    for (use, sector), profile in table.groupby(["use", "sector"], sort=False):
+    space = table[table.use.isin(TEMPERATURE_RANGES)]
+    for (use, sector), profile in space.groupby(["use", "sector"], sort=False):
         values = profile.set_index(KEYS, verify_integrity=True)["weight"]
         lower, upper = TEMPERATURE_RANGES[use]
         total = np.zeros(len(clock))
@@ -66,6 +74,19 @@ def thermal_weights(clock, temperature, population):
         output[use, sector] = total
     require(set(output) == {(use, sector) for use in TEMPERATURE_RANGES for sector in ("household", "service")},
             "Incomplete Hotmaps end-use extract")
+    water = table[table.use.eq("hot-water")].set_index(
+        ["region", "season", "day_type", "hour"], verify_integrity=True
+    )["weight"]
+    seasons = [hot_water_season(day) for day in days]
+    water_weights = np.zeros(len(clock))
+    for region in sorted(set(REGIONS.values())):
+        weight = sum(population[city] for city, assigned in REGIONS.items() if assigned == region)
+        keys = pd.MultiIndex.from_arrays([np.repeat(region, len(clock)), seasons, daytypes, local.hour + 1])
+        local_weights = water.reindex(keys).to_numpy()
+        require(np.isfinite(local_weights).all() and (local_weights >= 0).all(),
+                f"Missing or invalid Hotmaps hot-water values for {region}")
+        water_weights += weight * local_weights
+    output["hot-water", "household"] = water_weights
     return output
 
 
@@ -82,7 +103,7 @@ def extract(source, output):
     with output.open("wb") as raw, gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as zipped:
         with io.TextIOWrapper(zipped, encoding="utf-8", newline="") as stream:
             writer = csv.writer(stream, lineterminator="\n")
-            writer.writerow(["use", "sector", *KEYS, "weight"])
+            writer.writerow(["use", "sector", *KEYS, "season", "weight"])
             for record in register["files"]:
                 path = source / record["file"]
                 require(digest(path) == record["sha256"], f"Hotmaps source hash differs: {path.name}")
@@ -90,7 +111,8 @@ def extract(source, output):
                     for row in csv.DictReader(incoming):
                         if row["NUTS2_code"] in REGIONS.values():
                             writer.writerow([record["use"], record["sector"], row["NUTS2_code"],
-                                             row["day_type"], row["hour"], row["temperature"], row["load"]])
+                                             row["day_type"], row["hour"], row["temperature"],
+                                             row["season"], row["load"]])
 
 
 if __name__ == "__main__":

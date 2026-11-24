@@ -100,3 +100,20 @@ class PlanningTests(unittest.TestCase):
                     fixed = math.fsum(float(row[f"{model}__fixed_demand_mw"]) for row in rows)
                     self.assertAlmostEqual(fixed, receipt["fixed_demand_mwh"], places=3)
             self.assertAlmostEqual(manifest["years"]["2050"]["annual_mwh"]["hot_water"], 466307.91, places=2)
+
+    def test_hotmaps_all_replaces_hot_water_shape_at_equal_annual_energy(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary)
+            build(destination, thermal_profile="hotmaps-all", passenger_shape="tyndp-seasonal")
+            reference = ROOT / "results" / "planning"
+            self.assertEqual(read_table(reference / "reference-2023.csv.gz"),
+                             read_table(destination / "reference-2023.csv.gz"))
+            rows = read_table(destination / "2050.csv.gz")
+            heat = [float(row["heating_and_hot_water_mw"]) for row in rows]
+            road = [float(row["road_charging_mw"]) for row in rows]
+            receipt = json.loads((destination / "manifest.json").read_text(encoding="utf-8"))["years"]["2050"]
+            self.assertAlmostEqual(math.fsum(heat), 3832680.015, places=3)
+            self.assertAlmostEqual(max(heat), 1664.02, places=1)
+            self.assertAlmostEqual(math.fsum(road), 4850000, places=3)
+            self.assertAlmostEqual(max(road), 1567.28, places=1)
+            self.assertEqual(receipt["annual_mwh"]["hot_water"], 1236390)

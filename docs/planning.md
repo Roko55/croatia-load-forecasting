@@ -1,6 +1,6 @@
 # Electricity demand for capacity planning
 
-The five annual planning tables combine 12 forecast-based residual shapes with common electricity profiles for road charging, space heating and household hot water, and space cooling. Every model supplies the same annual electricity in a given planning year. The hourly shapes use the 2023 weather and calendar so that each model can be compared under the same conditions.
+The five annual planning tables combine 12 forecast-based residual shapes with common electricity profiles for road charging, space heating and household hot water, and space cooling. Every model supplies the same annual electricity in a given planning year. The hourly shapes use the 2023 weather and calendar so that each model can be compared under the same conditions. [The consolidated planning case](#consolidated-planning-case) uses one thermal profile family and the seasonal TYNDP passenger profiles.
 
 ![Winter and summer weeks in the 2050 planning scenario](../results/planning/2050-preview.png)
 
@@ -59,6 +59,7 @@ Each command writes a separate case to its output directory. The original comman
 ```sh
 python src/planning.py --thermal-profile hotmaps-cooling --output work/hotmaps-cooling
 python src/planning.py --thermal-profile hotmaps-thermal --rebase-thermal --output work/hotmaps-thermal
+python src/planning.py --thermal-profile hotmaps-all --passenger-shape tyndp-seasonal --output work/paper-fixed
 python src/planning.py --hot-water tyndp --output work/tyndp-hot-water
 python src/planning.py --passenger-shape tyndp-seasonal --ev-case tyndp-flex --output work/tyndp-ev
 ```
@@ -80,6 +81,16 @@ As a separate weather check, the same 2050 electricity budgets on the full 8,784
 **Climate sensitivity.** For a climate case, supply and thermal demand should use matched weather. Croatian SECURES-Energy input files contain complete 2050 temperatures. The four thermal demand columns share gaps at the 18 °C bin, covering 425 hours in RCP 4.5 and 370 hours in RCP 8.5. Use the weather columns with an explicit demand method or validate and document a gap treatment before using the demand columns. [SECURES-Energy](https://doi.org/10.5281/zenodo.14615500)
 
 To reproduce the compact source files, use the file names and URLs in the source registers. Use `python src/planning_hotmaps.py --source-dir DIR --output work/hotmaps-hr.csv.gz` for Hotmaps and `python src/planning_ev.py Electric-Vehicle.zip --output work/tyndp-hr-ev.json` for the Croatian EV parameters. The `planning_sources.py` command above accepts `--seasonal-passenger-output work/tyndp-hr-passenger-shapes.json` to regenerate the six fixed templates.
+
+## Consolidated planning case
+
+`hotmaps-all` uses Hotmaps for space heating, space cooling and household hot water. The hot-water table selects a shape by local hour, type of day and season, with the Hotmaps seasonal dates. At the same 1.236 TWh annual electricity use, the Hotmaps and When2Heat household hot-water profiles peak at 445 MW and 279 MW. For an isolated test of hot-water timing, compare `hotmaps-all` with `hotmaps-thermal` using otherwise identical settings. [Hotmaps report, section 2.7](https://www.hotmaps-project.eu/wp-content/uploads/2018/03/D2.3-Hotmaps_for-upload_revised-final_.pdf) · [Hot-water input DOI](https://doi.org/10.5281/zenodo.4687273)
+
+The consolidated fixed case combines `hotmaps-all` with `tyndp-seasonal` and uses the published 2023 deduction. This holds the residual shapes fixed in the first comparison. The alternative with `--rebase-thermal` rebuilds the historical thermal deduction as well. For 2050, the fixed case retains 26.317 TWh and yields total peaks of 4.548–4.963 GW across the 12 models on the 2023 weather clock. Adding `--ev-case tyndp-flex` removes 2.017 TWh from the fixed tables and reserves it for the flexible charging module. Its fixed demand peaks are not total system peaks.
+
+![Winter and summer weeks for the consolidated fixed 2050 case](../results/planning/2050-hotmaps-tyndp-preview.png)
+
+TYNDP supplies modelled passenger charging shapes. The NLR commercial proxy uses 100 operating days from an American warehouse-delivery fleet. Its hourly shares reproduce the expected load shape of the published minimum-power charging strategy, computed across the complete sample instead of resampling fleet days. Hotmaps supplies useful heating and cooling shapes based on empirical schedules and regional temperature. Applying those shapes to electricity budgets assumes a proportional relation between useful demand and electricity use within each component. The data support a reproducible scenario with cited assumptions. Direct validation of commercial charging and temperature-dependent conversion efficiency requires additional measurements or technology data. [Borlaug et al. (2021)](https://doi.org/10.1038/s41560-021-00855-0) · [NLR input schedules](https://github.com/NatLabRockies/hdev-depot-charging-2021/tree/61530df51f6cd7d64f014ebbf8714cef24c8ca70/data/fleet-schedules/fleet2-warehouse-delivery) · [Hotmaps report](https://www.hotmaps-project.eu/wp-content/uploads/2018/03/D2.3-Hotmaps_for-upload_revised-final_.pdf)
 
 ## Interpretation and use in H2RES
 

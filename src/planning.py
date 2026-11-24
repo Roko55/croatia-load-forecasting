@@ -182,8 +182,9 @@ def apply_hotmaps(added, profile, hotmaps, sector_gwh, weights, hot_water_mwh):
         scaled(hotmaps["cooling", sector], sector_gwh[f"{sector}_cooling"] * GWH_TO_MWH)
         for sector in ("household", "service")
     )
-    if profile == "hotmaps-thermal":
-        added["heating_and_hot_water"] = scaled(weights["hot_water"], hot_water_mwh) + sum(
+    if profile in ("hotmaps-thermal", "hotmaps-all"):
+        water = hotmaps["hot-water", "household"] if profile == "hotmaps-all" else weights["hot_water"]
+        added["heating_and_hot_water"] = scaled(water, hot_water_mwh) + sum(
             scaled(hotmaps["heating", sector], sector_gwh[f"{sector}_space_heat"] * GWH_TO_MWH)
             for sector in ("household", "service")
         )
@@ -191,7 +192,8 @@ def apply_hotmaps(added, profile, hotmaps, sector_gwh, weights, hot_water_mwh):
 
 def build(output, thermal_profile="degree-hours", rebase_thermal=False, hot_water_case="continuity",
           ev_case="fixed", passenger_shape="reference"):
-    require(thermal_profile in ("degree-hours", "hotmaps-cooling", "hotmaps-thermal"), "Unknown thermal profile")
+    require(thermal_profile in ("degree-hours", "hotmaps-cooling", "hotmaps-thermal", "hotmaps-all"),
+            "Unknown thermal profile")
     require(hot_water_case in ("continuity", "tyndp"), "Unknown hot-water energy case")
     require(ev_case in ("fixed", "tyndp-flex"), "Unknown passenger charging case")
     require(passenger_shape in ("reference", "tyndp-seasonal"), "Unknown passenger charging shape")
@@ -295,7 +297,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / "work" / "planning",
                         help="Directory for scenario tables and their manifest")
-    parser.add_argument("--thermal-profile", choices=("degree-hours", "hotmaps-cooling", "hotmaps-thermal"),
+    parser.add_argument("--thermal-profile", choices=("degree-hours", "hotmaps-cooling", "hotmaps-thermal", "hotmaps-all"),
                         default="degree-hours")
     parser.add_argument("--rebase-thermal", action="store_true",
                         help="Use the selected Hotmaps profiles in the 2023 deduction as well")
