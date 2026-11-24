@@ -1,16 +1,22 @@
-# Croatian hourly electricity demand forecasting
+# Croatian electricity demand forecasting and capacity planning
 
-Twelve forecasting workflows generate full-year hourly electricity demand profiles for Croatia using ERA5, a reconstruction of historical weather. **2019–2022** was used for model development. **2023–2025** compares the 12 fixed configurations retrospectively. **2026** is reserved for the final evaluation.
+This project compares 12 models of Croatian hourly electricity demand and uses their forecast shapes to build capacity-planning inputs for H2RES. Within each planning year, all models share the same annual electricity and the same road charging, heating and cooling assumptions. The comparison isolates differences in the remaining hourly demand.
 
-Two profiles with the same annual energy can have different peaks and ramps. Those differences can affect capacity and storage decisions in energy-system planning.
+## H2RES demand inputs
 
-[Run the benchmark](docs/reproduction.md) · [Read the methodology](docs/methodology.md) · [Results by year](docs/retrospective.md) · [Download hourly profiles](results/profiles/)
+[Download the hourly profiles](results/planning/h2res/) · [H2RES import and reproduction guide](docs/h2res-demand.md) · [Planning methodology and sources](docs/planning.md)
 
-## Electricity demand for capacity planning
+The package covers **2030, 2035, 2040, 2045 and 2050**. Each year contains 12 profiles on a common 8,760-hour chronology. In 2050, the profiles each total **26.317 TWh**, while their annual peaks span **4.548–4.963 GW**.
 
-The [H2RES demand package](docs/h2res-demand.md) contains ready-to-import hourly inputs for 12 models in each of five planning years from 2030 to 2050. It combines the Croatian TYNDP seasonal passenger charging profiles with Hotmaps heating, hot water and cooling. [Download the inputs](results/planning/h2res/) · [View the figures and reproduction commands](docs/h2res-demand.md) · [Read the full methodology and source register](docs/planning.md).
+![Weekly demand and annual peak ranges for the five planning years](results/planning/h2res/planning-years.png)
 
-## Models and results
+## Forecast benchmark
+
+Twelve forecasting workflows generate full-year hourly demand using the Croatian calendar and ERA5 historical weather. The study uses **2019–2022** for model development and **2023–2025** for retrospective comparison of the fixed configurations. **2026** is reserved for the final evaluation.
+
+[Run the benchmark](docs/reproduction.md) · [Read the methodology](docs/methodology.md) · [Results by year](docs/retrospective.md) · [Download archived forecasts](results/profiles/)
+
+### Models and results
 
 The comparison includes a historical calendar baseline, statistical models, tree-based models and neural networks fitted to Croatian data. Chronos-2 and TimesFM-3 use externally pretrained weights.
 
